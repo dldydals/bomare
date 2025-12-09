@@ -1,0 +1,36 @@
+.category-page {
+    padding-bottom: 80px;
+}
+
+.category-header {
+    background-color: var(--color-navy);
+    color: white;
+    padding: 80px 20px;
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.category-title {
+    font-family: var(--font-serif);
+    font-size: 3rem;
+    margin-bottom: 16px;
+    color: var(--color-gold);
+}
+
+.category-subtitle {
+    font-size: 1.1rem;
+    opacity: 0.8;
+    font-weight: 300;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 100px 0;
+    color: var(--color-text-muted);
+}
+
+.empty-state .sub {
+    font-size: 0.9rem;
+    margin-top: 8px;
+    opacity: 0.7;
+}

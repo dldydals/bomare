@@ -1,0 +1,18 @@
+.client-layout {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.main-content {
+    margin-top: var(--header-height);
+    /* Offset for fixed header */
+    flex: 1;
+}
+
+@media (max-width: 768px) {
+    .client-layout {
+        padding-bottom: var(--bottom-bar-height);
+        /* Offset for bottom bar on mobile */
+    }
+}

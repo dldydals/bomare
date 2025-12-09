@@ -1,0 +1,75 @@
+.footer {
+    background-color: var(--color-navy);
+    color: var(--color-white);
+    padding: 60px 0 30px;
+    margin-top: auto;
+}
+
+.footer-content {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 40px;
+    margin-bottom: 40px;
+}
+
+.footer-logo {
+    font-family: var(--font-serif);
+    font-size: 1.8rem;
+    color: var(--color-gold);
+    margin-bottom: 16px;
+}
+
+.footer-slogan {
+    font-style: italic;
+    opacity: 0.8;
+    margin-bottom: 24px;
+}
+
+.contact-info p {
+    margin: 8px 0;
+    opacity: 0.7;
+    font-size: 0.9rem;
+}
+
+.footer-links {
+    display: flex;
+    gap: 60px;
+}
+
+.link-group h3 {
+    font-family: var(--font-serif);
+    color: var(--color-gold);
+    margin-bottom: 20px;
+    font-size: 1.1rem;
+}
+
+.link-group a {
+    display: block;
+    margin-bottom: 12px;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+    font-size: 0.95rem;
+}
+
+.link-group a:hover {
+    opacity: 1;
+    color: var(--color-gold);
+}
+
+.footer-bottom {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 20px;
+    text-align: center;
+    font-size: 0.85rem;
+    opacity: 0.5;
+}
+
+@media (min-width: 768px) {
+    .footer-content {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .footer-links {
+        justify-content: flex-end;
+    }
+}

@@ -1,0 +1,231 @@
+.section {
+    padding: 80px 0;
+}
+
+.section-title {
+    font-family: var(--font-serif);
+    font-size: 2.5rem;
+    color: var(--color-navy);
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.section-desc {
+    text-align: center;
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.6;
+    color: var(--color-text-muted);
+}
+
+/* Hero */
+.hero-section {
+    position: relative;
+    height: 100vh;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    margin-top: calc(var(--header-height) * -1);
+    /* Underlay header */
+}
+
+.hero-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    z-index: 1;
+}
+
+.hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 2;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 3;
+    text-align: center;
+    color: var(--color-white);
+}
+
+.hero-title {
+    font-size: 4rem;
+    margin-bottom: 16px;
+    text-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.hero-subtitle {
+    font-size: 1.2rem;
+    margin-bottom: 32px;
+    font-weight: 300;
+    opacity: 0.9;
+}
+
+/* Portfolio Carousel */
+.portfolio-section {
+    background-color: var(--color-gray-50);
+}
+
+.header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 40px;
+}
+
+.view-more {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 1.1rem;
+    color: var(--color-gold-dim);
+    margin-bottom: 10px;
+}
+
+.carousel-container {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    padding: 0 20px 40px;
+    /* Right padding for scroll snap feel */
+    scroll-snap-type: x mandatory;
+}
+
+.carousel-item {
+    flex: 0 0 300px;
+    /* Fixed width cards */
+    height: 400px;
+    position: relative;
+    border-radius: 8px;
+    overflow: hidden;
+    scroll-snap-align: start;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s;
+}
+
+.carousel-item:hover {
+    transform: translateY(-5px);
+}
+
+.carousel-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.carousel-item .item-info {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 20px;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+    color: white;
+}
+
+.carousel-item h3 {
+    font-family: var(--font-serif);
+    font-size: 1.2rem;
+    margin-bottom: 4px;
+}
+
+.carousel-item p {
+    font-size: 0.9rem;
+    opacity: 0.8;
+}
+
+/* Event */
+.event-bg {
+    background-color: var(--color-navy);
+    color: white;
+}
+
+@media (max-width: 768px) {
+    .hero-title {
+        font-size: 2.5rem;
+    }
+}
+
+.brand-section {
+    background-color: white;
+}
+
+.brand-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 32px 24px;
+}
+
+.brand-card {
+    cursor: pointer;
+}
+
+.brand-image-wrapper {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 3/4;
+    /* Portrait ratio for elegance */
+    border-radius: 4px;
+    /* Slight rounding or sharp 0px for modern feel. Stick to 4px. */
+    overflow: hidden;
+    margin-bottom: 16px;
+    background-color: var(--color-gray-100);
+}
+
+.brand-image-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.brand-card:hover .brand-image-wrapper img {
+    transform: scale(1.05);
+}
+
+.brand-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.brand-card:hover .brand-overlay {
+    opacity: 1;
+}
+
+.brand-info {
+    text-align: center;
+}
+
+.brand-category {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--color-gold-dim);
+    display: block;
+    margin-bottom: 4px;
+}
+
+.brand-name {
+    font-family: var(--font-serif);
+    font-size: 1.1rem;
+    color: var(--color-navy);
+}
