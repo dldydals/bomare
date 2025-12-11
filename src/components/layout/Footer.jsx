@@ -6,7 +6,7 @@ export default function Footer() {
             <div className="container footer-content">
                 <div className="footer-brand">
                     <h2 className="footer-logo">Bomare Wedding</h2>
-                    <p className="footer-slogan">"가장 빛나는 순간의 큐레이션"</p>
+                    <p className="footer-slogan">"당신의 사랑이 작품이 되는 순간<br></br>The Moment Your Love Becomes a Work of Art."</p>
                     <div className="contact-info">
                         <p>서울시 강남구 청담동 123-45</p>
                         <p>Tel: 02-1234-5678</p>

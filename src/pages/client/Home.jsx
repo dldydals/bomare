@@ -44,7 +44,7 @@ export default function Home() {
                         transition={{ duration: 0.8 }}
                         className="hero-title"
                     >
-                        Timeless Elegance
+                        The Moment<br></br> Your Love Becomes a Work of Art.
                     </motion.h1>
                     <motion.p
                         initial={{ opacity: 0, y: 30 }}
@@ -52,7 +52,7 @@ export default function Home() {
                         transition={{ duration: 0.8, delay: 0.2 }}
                         className="hero-subtitle"
                     >
-                        가장 빛나는 순간의 큐레이션, 보마르 웨딩
+                        당신의 사랑이 작품이 되는 순간, 보마르 웨딩 
                     </motion.p>
                 </div>
             </section>
@@ -63,8 +63,10 @@ export default function Home() {
                     <div className="philosophy-content">
                         <h2 className="section-title">Digital Wedding Atelier</h2>
                         <p className="section-desc">
-                            당신의 사랑이 예술이 되는 시간. <br />
-                            보마르 웨딩은 엄선된 하이엔드 브랜드와 함께 당신만의 웨딩을 완성합니다.
+                            수많은 결혼식 중 하나가 아닌, 
+                            오직 두 분만을 위한 단 하나의 서사를 완성합니다. <br />
+                            보마르의 안목으로 큐레이션 된 하이엔드 웨딩의 세계로 초대합니다.
+                            
                         </p>
                     </div>
                 </div>
@@ -74,7 +76,8 @@ export default function Home() {
             <section className="section brand-section">
                 <div className="container">
                     <h2 className="section-title">Premium Curated Brands</h2>
-                    <p className="section-desc mb-10">보마르가 선택한 최고의 파트너를 만나보세요.</p>
+                    <p className="section-desc mb-10">보마르는 타협하지 않는 기준으로 파트너를 선정합니다.                     트렌드를 선도하되 본질을 잃지 않는 최고의 브랜드들. <br />
+                     보마르가 엄선한 라인업을 통해 실패 없는 완벽함을 경험하세요.</p>
 
                     <div className="brand-grid">
                         {brands.map((brand, i) => (
@@ -112,7 +115,7 @@ export default function Home() {
             <section className="section event-bg">
                 <div className="container text-center">
                     <h2 className="section-title text-white">Curated Events</h2>
-                    <p className="text-white mb-8 opacity-80">보마르 웨딩만의 특별한 혜택을 만나보세요.</p>
+                    <p className="text-white mb-8 opacity-80">보마르 웨딩 고객만을 위해 준비된 시즌별 익스클루시브 혜택을 확인하세요.</p>
                     <Button variant="outline" style={{ borderColor: 'white', color: 'white' }}>
                         View Events
                     </Button>
