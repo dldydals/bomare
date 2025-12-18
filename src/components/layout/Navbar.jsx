@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
-import logo from '../../assets/logo.jpg';
+import logo from '../../assets/logo2.png';
 import { Menu, X, Phone, MessageCircle, Calendar } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Button from '../ui/Button';
@@ -33,10 +33,10 @@ export default function Navbar() {
     return (
         <nav className={`navbar ${scrolled ? 'scrolled' : ''}`}>
             <div className="container navbar-content">
-                <Link to="/" className="logo flex items-center gap-3">
-                    <img src={logo} alt="Bomare Logo" className="h-6 w-auto mix-blend-multiply" />
-                    <span>Bomare Wedding</span>
-                </Link>
+                {/* <Link to="/" className="logo flex items-center"> */}
+                <a href="/"><img src={logo} alt="Bomare Logo" className="logo-image" /></a>
+                {/* </Link> */}
+                <span className="logo-text" >Bomare Wedding</span>
 
                 {/* Desktop Menu */}
                 <div className="desktop-menu">

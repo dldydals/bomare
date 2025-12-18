@@ -1,23 +1,42 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import Button from '../../components/ui/Button';
 import './Home.css';
 
 const HERO_IMAGE = "https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=2070";
 
+const CATEGORIES = [
+    { id: 'dress', name: 'Dress', title: '드레스' },
+    { id: 'studio', name: 'Studio', title: '스튜디오' },
+    { id: 'makeup', name: 'Makeup', title: '메이크업' },
+    { id: 'snap', name: 'Snap', title: '스냅' }
+];
+
 export default function Home() {
     const containerRef = useRef(null);
-    const [brands, setBrands] = useState([]);
+    const [vendorsByCategory, setVendorsByCategory] = useState({});
+    const scrollRefs = useRef({});
 
     useEffect(() => {
         fetch('/api/vendors')
             .then(res => res.json())
             .then(data => {
-                // Filter only featured brands
+                // Filter only featured vendors first
                 const featured = data.filter(vendor => vendor.is_featured);
-                setBrands(featured);
+
+                // Group vendors by category (support both English and Korean matching)
+                const grouped = {};
+                CATEGORIES.forEach(cat => {
+                    grouped[cat.id] = featured.filter(v => {
+                        if (!v.category) return false;
+                        const c = v.category.toLowerCase().trim();
+                        return c === cat.name.toLowerCase() || c === cat.title;
+                    });
+                });
+                setVendorsByCategory(grouped);
             })
-            .catch(err => console.error('Failed to fetch brands:', err));
+            .catch(err => console.error('Failed to fetch vendors:', err));
     }, []);
 
     const { scrollYProgress } = useScroll({
@@ -27,6 +46,17 @@ export default function Home() {
 
     const heroOpacity = useTransform(scrollYProgress, [0, 0.2], [1, 0]);
     const heroScale = useTransform(scrollYProgress, [0, 0.2], [1, 1.1]);
+
+    const scroll = (categoryId, direction) => {
+        const container = scrollRefs.current[categoryId];
+        if (container) {
+            const scrollAmount = 320; // card width + gap
+            container.scrollBy({
+                left: direction === 'left' ? -scrollAmount : scrollAmount,
+                behavior: 'smooth'
+            });
+        }
+    };
 
     return (
         <div className="home-page" ref={containerRef}>
@@ -52,7 +82,7 @@ export default function Home() {
                         transition={{ duration: 0.8, delay: 0.2 }}
                         className="hero-subtitle"
                     >
-                        당신의 사랑이 작품이 되는 순간, 보마르 웨딩 
+                        당신의 사랑이 작품이 되는 순간, 보마르 웨딩
                     </motion.p>
                 </div>
             </section>
@@ -63,53 +93,84 @@ export default function Home() {
                     <div className="philosophy-content">
                         <h2 className="section-title">Digital Wedding Atelier</h2>
                         <p className="section-desc">
-                            수많은 결혼식 중 하나가 아닌, 
+                            수많은 결혼식 중 하나가 아닌,
                             오직 두 분만을 위한 단 하나의 서사를 완성합니다. <br />
                             보마르의 안목으로 큐레이션 된 하이엔드 웨딩의 세계로 초대합니다.
-                            
                         </p>
                     </div>
                 </div>
             </section>
 
-            {/* Featured Brands (New) */}
-            <section className="section brand-section">
-                <div className="container">
-                    <h2 className="section-title">Premium Curated Brands</h2>
-                    <p className="section-desc mb-10">보마르는 타협하지 않는 기준으로 파트너를 선정합니다.                     트렌드를 선도하되 본질을 잃지 않는 최고의 브랜드들. <br />
-                     보마르가 엄선한 라인업을 통해 실패 없는 완벽함을 경험하세요.</p>
+            {/* Category Sections with Horizontal Scroll */}
+            {CATEGORIES.map((category, idx) => {
+                const vendors = vendorsByCategory[category.id] || [];
+                if (vendors.length === 0) return null;
 
-                    <div className="brand-grid">
-                        {brands.map((brand, i) => (
-                            <motion.div
-                                key={brand.id || i}
-                                className="brand-card"
-                                initial={{ opacity: 0, y: 20 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ delay: i * 0.05 }}
+                return (
+                    <section key={category.id} className="section category-section">
+                        <div className="container">
+                            <div className="category-header">
+                                <div>
+                                    <h2 className="category-title">{category.title}</h2>
+                                    <p className="category-subtitle">{category.name}</p>
+                                </div>
+                                <div className="scroll-controls">
+                                    <button
+                                        className="scroll-btn"
+                                        onClick={() => scroll(category.id, 'left')}
+                                        aria-label="Scroll left"
+                                    >
+                                        <ChevronLeft size={24} />
+                                    </button>
+                                    <button
+                                        className="scroll-btn"
+                                        onClick={() => scroll(category.id, 'right')}
+                                        aria-label="Scroll right"
+                                    >
+                                        <ChevronRight size={24} />
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div
+                                className="horizontal-scroll-container"
+                                ref={el => scrollRefs.current[category.id] = el}
                             >
-                                <div className="brand-image-wrapper">
-                                    <img src={brand.image} alt={brand.name} onError={(e) => e.target.src = 'https://via.placeholder.com/400x500?text=No+Image'} />
-                                    <div className="brand-overlay">
-                                        <Button variant="outline" style={{ color: 'white', borderColor: 'white' }}>View Details</Button>
-                                    </div>
-                                </div>
-                                <div className="brand-info">
-                                    <span className="brand-category">{brand.category}</span>
-                                    <h3 className="brand-name">{brand.name}</h3>
-                                </div>
-                            </motion.div>
-                        ))}
-                    </div>
-
-                    <div className="text-center mt-12">
-                        <Button variant="secondary" onClick={() => window.location.href = '/category/studio'}>
-                            View All Brands
-                        </Button>
-                    </div>
-                </div>
-            </section>
+                                {vendors.map((vendor, i) => (
+                                    <motion.div
+                                        key={vendor.id}
+                                        className="vendor-card"
+                                        initial={{ opacity: 0, x: 20 }}
+                                        whileInView={{ opacity: 1, x: 0 }}
+                                        viewport={{ once: true }}
+                                        transition={{ delay: i * 0.05 }}
+                                    >
+                                        <div className="vendor-image-wrapper">
+                                            <img
+                                                src={vendor.image}
+                                                alt={vendor.name}
+                                                onError={(e) => e.target.src = 'https://via.placeholder.com/300x400?text=No+Image'}
+                                            />
+                                            <div className="vendor-overlay">
+                                                <Button
+                                                    variant="outline"
+                                                    style={{ color: 'white', borderColor: 'white' }}
+                                                >
+                                                    View Details
+                                                </Button>
+                                            </div>
+                                        </div>
+                                        <div className="vendor-info">
+                                            <h3 className="vendor-name">{vendor.name}</h3>
+                                            <p className="vendor-location">{vendor.location}</p>
+                                        </div>
+                                    </motion.div>
+                                ))}
+                            </div>
+                        </div>
+                    </section>
+                );
+            })}
 
             {/* Event Section */}
             <section className="section event-bg">

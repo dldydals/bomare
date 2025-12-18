@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>운명의 별: 타로 전문가 홈페이지</title>
+    <!-- Tailwind CSS CDN 로드 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Inter 폰트 사용 설정 -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+    <style>
+        /* 타로 컨셉에 맞는 색상 및 폰트 설정 */
+        :root {
+            --color-primary: #581c87; /* Deep Purple */
+            --color-secondary: #fcd34d; /* Gold/Amber */
+            /* 배경색을 불투명하고 어두운 단색으로 변경 */
+            --color-background: #0f172a; /* Solid Slate-900 equivalent */ 
+            --color-text: #e2e8f0; /* Light Slate */
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--color-text);
+            
+            /* --- 배경 이미지 제거 및 전체 배경색 설정 --- */
+            background-color: var(--color-background); 
+        }
+        
+        .text-primary { color: var(--color-primary); }
+        .bg-primary { background-color: var(--color-primary); }
+        .text-secondary { color: var(--color-secondary); }
+        .border-secondary { border-color: var(--color-secondary); }
+        
+        /* 별점 아이콘 스타일 */
+        .star-filled { color: var(--color-secondary); }
+        .star-empty { color: #475569; }
+
+        /* 모바일 뷰에서 최대 너비 제한 및 배경 투명도 제거 */
+        .container-wrapper {
+            max-width: 640px; /* Max width for mobile-focused design */
+            min-height: 100vh;
+            /* 불투명한 단색 배경색 적용 */
+            background-color: var(--color-background); 
+        }
+        
+        /* 전문가 사진 스타일링 */
+        .expert-photo {
+            box-shadow: 0 0 20px rgba(88, 28, 135, 0.7); /* 보라색 글로우 */
+        }
+        /* 예약 CTA 버튼 */
+        .cta-button {
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(252, 211, 77, 0.4);
+        }
+        .cta-button:hover {
+            box-shadow: 0 6px 20px rgba(252, 211, 77, 0.6);
+            transform: translateY(-2px);
+        }
+
+        /* 햄버거 메뉴 애니메이션 */
+        .nav-link {
+            transition: color 0.2s ease;
+        }
+        .nav-link:hover {
+            color: var(--color-secondary);
+        }
+
+        /* Scroll Animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .section-fade-in {
+            opacity: 0;
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+
+        /* 덱 유형 스타일링 */
+        .deck-tag {
+            background-color: #3f1a60; /* Slightly lighter purple */
+            color: var(--color-secondary);
+            border: 1px solid var(--color-secondary);
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+
+    <!-- container-wrapper: 배경 이미지 대신 전체 화면을 덮는 단색 컨테이너 -->
+    <div class="mx-auto container-wrapper shadow-2xl relative overflow-hidden">
+        
+        <!-- 1. 헤더 및 네비게이션 (Mobile First) -->
+        <header class="sticky top-0 z-50 p-4 border-b border-gray-700/50 bg-slate-900/90 backdrop-blur-sm">
+            <div class="flex items-center justify-between">
+                <h1 class="text-xl font-bold text-secondary">
+                    운명의 별
+                </h1>
+                <button id="menu-button" class="text-secondary focus:outline-none md:hidden">
+                    <!-- Hamburger Icon -->
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                </button>
+            </div>
+            <!-- 모바일 메뉴 (Hidden by default) -->
+            <nav id="mobile-menu" class="hidden mt-4 space-y-2 text-center">
+                <a href="#expert-intro" class="block py-2 nav-link">전문가 소개</a>
+                <a href="#decks-type" class="block py-2 nav-link">상담 유형</a>
+                <a href="#services" class="block py-2 nav-link">서비스/요금</a>
+                <a href="#reviews" class="block py-2 nav-link">상담 후기</a>
+                <a href="#faq" class="block py-2 nav-link">공지/FAQ</a>
+                <a href="#reservation-cta" class="block py-2 px-4 rounded-full bg-secondary text-slate-900 font-semibold shadow-md">지금 예약하기</a>
+            </nav>
+        </header>
+
+        <!-- 2. 메인 히어로 섹션 (Home) -->
+        <main class="p-6 relative z-10"> <!-- z-10으로 메인 콘텐츠를 배경 카드보다 위에 배치 -->
+            <section id="home" class="text-center py-16 section-fade-in" style="animation-delay: 0s;">
+                <div class="w-32 h-32 mx-auto rounded-full overflow-hidden mb-6 expert-photo border-4 border-secondary/50">
+                    <!-- 전문가 프로필 이미지: 이전에 요청하신 우주 이미지 URL을 유지합니다. 실제 프로필 사진으로 교체해주세요. -->
+                    <img src="/assets/img_bg.png" width="1974" alt="타로 전문가 타로스타" class="w-full h-full object-cover" onerror="this.onerror=null; this.src='https://placehold.co/128x128/581c87/fcd34d?text=타로스타'">
+                </div>
+                <h2 class="text-3xl font-extrabold mb-2 text-white">타로 전문가 타로스타</h2>
+                <p class="text-lg mb-6 text-gray-400">
+                    당신의 길을 밝히는, <span class="text-secondary font-semibold">운명 해석의 마스터</span>
+                </p>
+
+                <!-- 예약 버튼 CTA -->
+                <a href="#reservation-cta" class="cta-button inline-block w-full sm:w-auto px-10 py-4 text-lg font-bold rounded-xl bg-secondary text-slate-900">
+                    🔮 실시간 예약하기 (CTA)
+                </a>
+
+                <!-- 후기 하이라이트 -->
+                <div class="mt-10 p-4 bg-primary/30 rounded-lg border-l-4 border-secondary/70">
+                    <p class="text-sm font-medium text-gray-300">"고민하던 문제에 명쾌한 해답을 얻었어요." - 베스트 후기</p>
+                    <div class="flex justify-center items-center mt-1">
+                        <span class="text-2xl star-filled">★★★★★</span>
+                        <span class="ml-2 text-sm text-gray-400">(총 4.9점, 350+건 상담)</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 3. 전문가 소개 (Expert Profile) -->
+            <section id="expert-intro" class="py-12 border-t border-gray-700 section-fade-in" style="animation-delay: 0.2s;">
+                <h3 class="text-2xl font-bold mb-6 text-primary border-b-2 border-secondary/50 pb-2">✨ 전문가 타로스타 소개</h3>
+                
+                <div class="space-y-6">
+                    <!-- 전문가 철학 -->
+                    <div class="p-4 bg-slate-800 rounded-lg shadow-md">
+                        <p class="font-semibold text-secondary mb-2">철학: 타로는 '선택'의 조력자</p>
+                        <p class="text-sm leading-relaxed text-gray-300">저는 타로를 단순한 점술이 아닌, 내면의 목소리를 듣고 최선의 선택을 할 수 있도록 돕는 심리 상담 도구로 사용합니다. 당신의 미래는 이미 결정된 것이 아니라, 지금 이 순간의 선택으로 만들어집니다.</p>
+                    </div>
+
+                    <!-- 경력 및 자격증 -->
+                    <div class="p-4 bg-slate-800 rounded-lg shadow-md">
+                        <p class="font-semibold text-secondary mb-2">주요 경력</p>
+                        <ul class="text-sm space-y-2 list-disc list-inside text-gray-300">
+                            <li>국제 타로 마스터 협회 공인 자격증 취득 (2015)</li>
+                            <li>온/오프라인 누적 상담 10,000회 이상</li>
+                            <li>[미디어 출연] SBS '미래를 읽다' 게스트 출연 (2023)</li>
+                            <li>심리상담사 2급 자격 보유</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- 친밀감 강화 (인터뷰 형식) -->
+                <div class="mt-8 p-4 bg-primary/50 rounded-lg text-center">
+                    <p class="font-medium text-white italic">"타로 카드가 보여주는 것은 당신 마음속의 진실입니다."</p>
+                    <a href="#" class="text-sm text-secondary/90 hover:text-white mt-1 block">전문가 인터뷰 전문 보기 &gt;</a>
+                </div>
+            </section>
+            
+            <!-- 4. 타로 덱 / 상담 유형 소개 (New Section) -->
+            <section id="decks-type" class="py-12 border-t border-gray-700 section-fade-in" style="animation-delay: 0.3s;">
+                <h3 class="text-2xl font-bold mb-6 text-primary border-b-2 border-secondary/50 pb-2">🃏 타로 덱/상담 유형</h3>
+                
+                <p class="text-sm text-gray-300 mb-6 leading-relaxed">
+                    상담 주제와 고객님의 상황에 따라 가장 적합한 덱을 선택하여 심도 있는 해석을 제공합니다. 아래는 타로스타가 주력으로 사용하는 주요 덱들입니다.
+                </p>
+
+                <div class="grid grid-cols-2 gap-4 text-center">
+                    <!-- 덱 카드 1: 유니버셜 웨이트(유니타로) -->
+                    <div class="p-4 rounded-lg bg-slate-800 shadow-md deck-tag">
+                        <p class="text-lg font-bold">유니버셜 웨이트</p>
+                        <p class="text-xs text-gray-400 mt-1">기본/전통 해석</p>
+                    </div>
+                    <!-- 덱 카드 2: 심볼론 -->
+                    <div class="p-4 rounded-lg bg-slate-800 shadow-md deck-tag">
+                        <p class="text-lg font-bold">심볼론 (Symbolon)</p>
+                        <p class="text-xs text-gray-400 mt-1">심리/관계 분석</p>
+                    </div>
+                    <!-- 덱 카드 3: 데카메론 -->
+                    <div class="p-4 rounded-lg bg-slate-800 shadow-md deck-tag">
+                        <p class="text-lg font-bold">데카메론</p>
+                        <p class="text-xs text-gray-400 mt-1">성인/연애 심리</p>
+                    </div>
+                    <!-- 덱 카드 4: 오쇼젠 -->
+                    <div class="p-4 rounded-lg bg-slate-800 shadow-md deck-tag">
+                        <p class="text-lg font-bold">오쇼젠 (Osho Zen)</p>
+                        <p class="text-xs text-gray-400 mt-1">명상/현실 자각</p>
+                    </div>
+                    <!-- 추가 덱 (예시) -->
+                    <div class="col-span-2 p-3 mt-4 text-sm font-medium rounded-lg bg-primary/50 text-white">
+                        이 외에도 <span class="font-bold">마르세유, 키퍼, 레노먼드</span> 등 다양한 덱을 준비하고 있습니다.
+                    </div>
+                </div>
+            </section>
+
+
+            <!-- 5. 서비스 및 요금 (Services/Pricing) -->
+            <section id="services" class="py-12 border-t border-gray-700 section-fade-in" style="animation-delay: 0.5s;">
+                <h3 class="text-2xl font-bold mb-6 text-primary border-b-2 border-secondary/50 pb-2">⭐ 서비스/요금 안내</h3>
+                
+                <!-- 필터링 옵션 (Mobile-focused buttons) -->
+                <div class="flex flex-wrap gap-2 mb-6">
+                    <button onclick="filterServices('all', this)" class="service-filter bg-secondary text-slate-900 px-4 py-2 text-sm rounded-full font-semibold transition duration-300 shadow-lg">전체</button>
+                    <button onclick="filterServices('phone', this)" class="service-filter bg-slate-700 text-gray-300 hover:bg-secondary hover:text-slate-900 px-4 py-2 text-sm rounded-full font-semibold transition duration-300">전화 상담</button>
+                    <button onclick="filterServices('visit', this)" class="service-filter bg-slate-700 text-gray-300 hover:bg-secondary hover:text-slate-900 px-4 py-2 text-sm rounded-full font-semibold transition duration-300">방문 상담</button>
+                    <button onclick="filterServices('chat', this)" class="service-filter bg-slate-700 text-gray-300 hover:bg-secondary hover:text-slate-900 px-4 py-2 text-sm rounded-full font-semibold transition duration-300">채팅 상담</button>
+                </div>
+
+                <div id="service-list" class="space-y-4">
+                    <!-- 서비스 카드 1 (전화) -->
+                    <div class="service-card p-4 rounded-xl bg-slate-800 shadow-xl border border-primary" data-type="phone">
+                        <h4 class="text-xl font-bold text-secondary mb-1">심층 전화 타로 상담</h4>
+                        <p class="text-sm text-gray-400 mb-3">연애, 직업, 재회 등 복잡한 문제에 대한 깊이 있는 해석</p>
+                        <div class="flex justify-between items-center text-sm font-medium">
+                            <span>🕒 소요 시간: 60분</span>
+                            <span class="text-lg font-extrabold text-white">₩80,000</span>
+                        </div>
+                        <p class="text-xs text-green-400 mt-2">✅ 실시간 잔여 시간 반영 (예약 페이지에서 확인)</p>
+                    </div>
+
+                    <!-- 서비스 카드 2 (방문) -->
+                    <div class="service-card p-4 rounded-xl bg-slate-800 shadow-xl border border-primary" data-type="visit">
+                        <h4 class="text-xl font-bold text-secondary mb-1">프리미엄 방문 상담</h4>
+                        <p class="text-sm text-gray-400 mb-3">오프라인에서 카드와 에너지를 직접 교류하는 특별한 경험</p>
+                        <div class="flex justify-between items-center text-sm font-medium">
+                            <span>🕒 소요 시간: 90분</span>
+                            <span class="text-lg font-extrabold text-white">₩120,000</span>
+                        </div>
+                        <p class="text-xs text-green-400 mt-2">✅ 오직 평일 오후에만 예약 가능</p>
+                    </div>
+                    
+                    <!-- 서비스 카드 3 (채팅) -->
+                    <div class="service-card p-4 rounded-xl bg-slate-800 shadow-xl border border-primary" data-type="chat">
+                        <h4 class="text-xl font-bold text-secondary mb-1">빠른 채팅 타로 (1시간)</h4>
+                        <p class="text-sm text-gray-400 mb-3">간단한 질문이나 급한 상황에 1시간 동안 집중적으로 답변</p>
+                        <div class="flex justify-between items-center text-sm font-medium">
+                            <span>🕒 소요 시간: 60분</span>
+                            <span class="text-lg font-extrabold text-white">₩50,000</span>
+                        </div>
+                        <p class="text-xs text-green-400 mt-2">✅ 빠른 답변 보장 (오류 방지 시스템 적용)</p>
+                    </div>
+                </div>
+
+                <!-- 예약 시스템 CTA (캘린더 기반 시간표 확인 유도) -->
+                <div id="reservation-cta" class="mt-8 text-center pt-8 border-t border-gray-700">
+                    <p class="text-lg font-semibold text-white mb-4">원하는 상담 방식과 시간을 선택하세요.</p>
+                    <button onclick="showReservationModal()" class="cta-button w-full px-8 py-4 text-xl font-bold rounded-xl bg-secondary text-slate-900">
+                        🗓️ 예약 시간표 확인 및 결제 연동
+                    </button>
+                    <p class="text-xs mt-2 text-gray-500">실시간 잔여 시간을 확인하고 바로 예약/결제할 수 있습니다.</p>
+                </div>
+            </section>
+
+            <!-- 6. 상담 후기 (Testimonials) -->
+            <section id="reviews" class="py-12 border-t border-gray-700 section-fade-in" style="animation-delay: 0.7s;">
+                <h3 class="text-2xl font-bold mb-6 text-primary border-b-2 border-secondary/50 pb-2">💬 실제 고객 후기</h3>
+                
+                <div class="space-y-6">
+                    <!-- 후기 카드 1 -->
+                    <div class="p-4 bg-slate-800 rounded-xl shadow-lg border-l-4 border-secondary">
+                        <div class="flex items-center mb-2">
+                            <span class="star-filled">★★★★★</span>
+                            <span class="ml-3 text-sm font-semibold text-gray-200">익명 고객 01</span>
+                        </div>
+                        <p class="text-base italic text-gray-300 leading-relaxed">"정말 신기하게도 제가 말하지 않은 상황까지 정확하게 짚어주셔서 놀랐습니다. 앞으로의 방향을 잡는 데 큰 도움이 되었어요. 감사합니다!"</p>
+                        <p class="text-xs mt-3 text-gray-500 text-right">상담 상품: 심층 전화 타로 | 2024.10.25</p>
+                    </div>
+
+                    <!-- 후기 카드 2 -->
+                    <div class="p-4 bg-slate-800 rounded-xl shadow-lg border-l-4 border-secondary">
+                        <div class="flex items-center mb-2">
+                            <span class="star-filled">★★★★☆</span>
+                            <span class="ml-3 text-sm font-semibold text-gray-200">익명 고객 02</span>
+                        </div>
+                        <p class="text-base italic text-gray-300 leading-relaxed">"조언이 현실적이고 따뜻했어요. 다만 예약이 너무 어려워서 별 하나 뺐습니다 ㅠㅠ. 그래도 상담 퀄리티는 최고!"</p>
+                        <p class="text-xs mt-3 text-gray-500 text-right">상담 상품: 프리미엄 방문 상담 | 2024.11.01</p>
+                    </div>
+                    
+                    <!-- 후기 작성 신뢰도 문구 -->
+                    <p class="text-sm text-center text-gray-500 pt-4 border-t border-gray-800">
+                        * 후기는 예약 및 결제를 완료한 실제 고객에게만 작성 권한이 부여됩니다.
+                    </p>
+                    <a href="#" class="block text-center text-primary font-semibold hover:text-secondary mt-2">전체 후기 더 보기 &gt;</a>
+                </div>
+            </section>
+
+            <!-- 7. 공지 및 FAQ (Notice/FAQ) -->
+            <section id="faq" class="py-12 border-t border-gray-700 section-fade-in" style="animation-delay: 0.9s;">
+                <h3 class="text-2xl font-bold mb-6 text-primary border-b-2 border-secondary/50 pb-2">❓ 공지 및 FAQ</h3>
+
+                <!-- 공지 사항 (운영 시간) -->
+                <div class="p-4 bg-primary/30 rounded-lg mb-6 border border-primary/70">
+                    <p class="text-lg font-semibold text-white mb-2">📌 [필독] 12월 운영 시간 안내</p>
+                    <p class="text-sm text-gray-200">운영 시간: 평일 10:00 - 22:00 / 주말 11:00 - 18:00 (화요일 정기 휴무)</p>
+                    <p class="text-sm text-red-300 mt-1">임시 휴무일: 12월 24일, 25일 전체 예약 마감.</p>
+                </div>
+
+                <!-- FAQ 검색 기능 (Simulated) -->
+                <input type="text" id="faq-search" onkeyup="searchFaq()" placeholder="궁금한 점을 검색해보세요 (예: 환불, 준비물)" class="w-full p-3 mb-4 rounded-lg bg-slate-700 text-white placeholder-gray-400 focus:ring-secondary focus:border-secondary">
+
+                <!-- FAQ 목록 -->
+                <div id="faq-list" class="space-y-3">
+                    <details class="p-3 bg-slate-800 rounded-lg cursor-pointer hover:bg-slate-700 transition">
+                        <summary class="font-semibold text-gray-100">Q. 상담 전 미리 준비해야 할 것이 있나요?</summary>
+                        <p class="mt-2 text-sm text-gray-300">A. 특별히 준비할 것은 없지만, 상담받고 싶은 질문을 명확하게 2~3가지 정도 미리 정리해두시면 더욱 심도 있는 상담이 가능합니다.</p>
+                    </details>
+                    <details class="p-3 bg-slate-800 rounded-lg cursor-pointer hover:bg-slate-700 transition">
+                        <summary class="font-semibold text-gray-100">Q. 예약 후 취소 및 환불 규정은 어떻게 되나요?</summary>
+                        <p class="mt-2 text-sm text-gray-300">A. 상담 24시간 전 취소 시 전액 환불이 가능합니다. 이후 취소 시에는 예약 상품에 따라 수수료가 발생할 수 있습니다. 자세한 내용은 예약 페이지를 참고해주세요.</p>
+                    </details>
+                    <details class="p-3 bg-slate-800 rounded-lg cursor-pointer hover:bg-slate-700 transition">
+                        <summary class="font-semibold text-gray-100">Q. 여러 명이 같이 상담받을 수 있나요?</summary>
+                        <p class="mt-2 text-sm text-gray-300">A. 네, 방문 상담 시 최대 2인까지 가능합니다. 다만, 상담 시간이 추가될 수 있으므로 예약 시 미리 말씀해주시기 바랍니다.</p>
+                    </details>
+                </div>
+                
+                <!-- 개인 정보 보호 정책 CTA -->
+                <div class="mt-8 text-center pt-8 border-t border-gray-700">
+                    <p class="text-xs text-gray-500">
+                        예약 시 수집되는 개인 정보는 안전하게 보관되며, <span class="font-bold text-red-400">보관 및 파기 정책을 준수</span>합니다.
+                    </p>
+                    <a href="#" class="text-sm text-primary font-semibold hover:text-secondary mt-2 block">개인 정보 보호 정책 전문 보기</a>
+                </div>
+
+            </section>
+        </main>
+
+        <!-- 8. 푸터 -->
+        <footer class="p-6 text-center text-xs text-gray-400 border-t border-gray-700 mt-8 bg-slate-900/90 relative z-10">
+            <p class="mb-2">운명의 별 | 타로 전문가 타로스타</p>
+            <p>사업자 등록 번호: 123-45-67890</p>
+            <p>연락처: 010-0000-0000 | 이메일: tarostar@email.com</p>
+            <p class="mt-4">&copy; 2024. 운명의 별. All rights reserved.</p>
+        </footer>
+        
+    </div>
+    
+    <!-- 모달: 예약 시스템 시뮬레이션 -->
+    <div id="reservation-modal" class="hidden fixed inset-0 bg-black bg-opacity-75 z-[100] flex items-center justify-center p-4" onclick="closeReservationModal(event)">
+        <div class="bg-slate-800 p-6 rounded-xl w-full max-w-sm text-center transform transition-all duration-300 scale-95 opacity-0" id="modal-content">
+            <h4 class="text-xl font-bold text-secondary mb-4">🗓️ 예약 시스템 (시뮬레이션)</h4>
+            <p class="text-gray-300 mb-6">캘린더 기반의 실시간 예약 페이지로 이동합니다. (PG사 결제 연동 예정)</p>
+            <button onclick="alertMessage('실제 예약 시스템 페이지로 이동되었습니다. (결제 연동 필요)', 'success')" class="cta-button w-full px-4 py-3 font-bold rounded-lg bg-secondary text-slate-900">
+                예약 진행하기
+            </button>
+            <button onclick="closeReservationModal()" class="mt-3 w-full px-4 py-2 font-medium rounded-lg bg-slate-700 text-gray-300">
+                닫기
+            </button>
+        </div>
+    </div>
+    
+    <!-- 모달: 사용자 메시지/알림 (alert() 대체) -->
+    <div id="message-modal" class="hidden fixed inset-0 bg-black bg-opacity-75 z-[101] flex items-center justify-center p-4">
+        <div class="bg-slate-800 p-6 rounded-xl w-full max-w-xs text-center shadow-2xl border border-secondary" id="message-content">
+            <p id="message-text" class="text-gray-200 mb-4 font-semibold"></p>
+            <button onclick="hideAlertMessage()" class="px-4 py-2 bg-primary hover:bg-primary/80 rounded-lg text-white font-medium">확인</button>
+        </div>
+    </div>
+
+    <script>
+        // DOM 요소
+        const menuButton = document.getElementById('menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const reservationModal = document.getElementById('reservation-modal');
+        const modalContent = document.getElementById('modal-content');
+        const messageModal = document.getElementById('message-modal');
+        const messageText = document.getElementById('message-text');
+
+        // 1. 모바일 메뉴 토글
+        menuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // 2. 서비스 필터링
+        function filterServices(type, element) {
+            const serviceCards = document.querySelectorAll('.service-card');
+            const filters = document.querySelectorAll('.service-filter');
+            
+            // 버튼 스타일 업데이트
+            filters.forEach(btn => {
+                btn.classList.remove('bg-secondary', 'text-slate-900');
+                btn.classList.add('bg-slate-700', 'text-gray-300');
+                btn.classList.add('hover:bg-secondary', 'hover:text-slate-900');
+            });
+
+            element.classList.add('bg-secondary', 'text-slate-900');
+            element.classList.remove('bg-slate-700', 'text-gray-300', 'hover:bg-secondary', 'hover:text-slate-900');
+
+            // 카드 표시/숨김
+            serviceCards.forEach(card => {
+                if (type === 'all' || card.getAttribute('data-type') === type) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+        // 초기 로드 시 '전체' 필터 적용
+        document.addEventListener('DOMContentLoaded', () => {
+            // 현재 활성화된 필터 버튼을 찾거나, 기본으로 첫 번째 버튼을 선택
+            const initialFilter = document.querySelector('.service-filter');
+            if(initialFilter) {
+                filterServices('all', initialFilter);
+            }
+        });
+
+
+        // 3. FAQ 검색 기능
+        function searchFaq() {
+            const input = document.getElementById('faq-search').value.toLowerCase();
+            const faqItems = document.querySelectorAll('#faq-list details');
+            
+            faqItems.forEach(item => {
+                const summary = item.querySelector('summary').textContent.toLowerCase();
+                const content = item.querySelector('p').textContent.toLowerCase();
+                
+                if (summary.includes(input) || content.includes(input)) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        // 4. 예약 모달 표시
+        function showReservationModal() {
+            reservationModal.classList.remove('hidden');
+            setTimeout(() => {
+                modalContent.classList.remove('scale-95', 'opacity-0');
+                modalContent.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        // 5. 예약 모달 닫기
+        function closeReservationModal(event) {
+            // 모달 콘텐츠 내부 클릭 시 닫히지 않도록 방지
+            if (event && event.target.id !== 'reservation-modal') return;
+
+            modalContent.classList.remove('scale-100', 'opacity-100');
+            modalContent.classList.add('scale-95', 'opacity-0');
+            
+            // 애니메이션 후 숨김
+            setTimeout(() => {
+                reservationModal.classList.add('hidden');
+            }, 300);
+        }
+        
+        // 6. Alert() 대체 사용자 메시지 표시
+        function alertMessage(message, type) {
+            messageText.textContent = message;
+            
+            // 모달 스타일 업데이트 (optional: color based on type)
+            const msgContent = document.getElementById('message-content');
+            if (type === 'success') {
+                msgContent.classList.remove('border-red-500');
+                msgContent.classList.add('border-green-500');
+            } else {
+                msgContent.classList.remove('border-green-500');
+                msgContent.classList.add('border-secondary');
+            }
+            
+            messageModal.classList.remove('hidden');
+            closeReservationModal(); // 예약 모달이 열려있다면 닫기
+        }
+
+        // 7. 사용자 메시지 숨기기
+        function hideAlertMessage() {
+            messageModal.classList.add('hidden');
+        }
+
+        // 8. 스크롤 애니메이션 적용
+        const faders = document.querySelectorAll('.section-fade-in');
+        const appearOptions = {
+            threshold: 0.1, // 뷰포트의 10%가 보이면 실행
+            rootMargin: "0px 0px -50px 0px"
+        };
+        const appearOnScroll = new IntersectionObserver(function(entries, appearOnScroll) {
+            entries.forEach(entry => {
+                if (!entry.isIntersecting) {
+                    return;
+                } else {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                    // 애니메이션 딜레이가 이미 CSS에 설정되어 있으므로 별도 계산 없이 실행
+                    appearOnScroll.unobserve(entry.target);
+                }
+            });
+        }, appearOptions);
+
+        faders.forEach(fader => {
+            appearOnScroll.observe(fader);
+        });
+
+    </script>
+</body>
+</html>

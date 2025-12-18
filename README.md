@@ -4,8 +4,6 @@ This template provides a minimal setup to get React working in Vite with HMR and
 
 Currently, two official plugins are available:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
 ## React Compiler
 
@@ -14,3 +12,26 @@ The React Compiler is not enabled on this template because of its impact on dev 
 ## Expanding the ESLint configuration
 
 If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+
+## Tarrot pages & APIs (Added)
+
+- Client tarrot page: `/tarrot`
+- Admin tarrot management: `/tarrot-admin`
+
+APIs (server runs on port 3000):
+- `GET /api/reviews` - list reviews for tarrot
+- `POST /api/reviews` - create review ({ name, rating, comment, product? })
+- `DELETE /api/reviews/:id` - delete review (admin only)
+
+Admin auth endpoints:
+- `POST /api/admin/login` - login with admin email/password, returns `{ token }`
+- `GET /api/admin/me` - returns current admin info (admin only)
+
+The server will automatically create the `reviews` table on startup if it does not exist.
+
+Env variables (optional):
+- `ADMIN_EMAIL` default `admin@local`
+- `ADMIN_PASSWORD` default `adminpass`
+- `JWT_SECRET` default `dev-secret-token`
+
+For local testing, a default admin user is created on first run if none exists (use the env vars above to change credentials).

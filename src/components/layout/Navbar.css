@@ -28,17 +28,52 @@
     font-size: 1.5rem;
     font-weight: 600;
     letter-spacing: -0.02em;
-    color: var(--color-navy);
+    color: var(--color-gold-dim);
     display: flex;
     align-items: center;
+    white-space: nowrap;
     gap: 12px;
+    /* Replaces gap-3 */
 }
 
-.logo img {
-    height: 1.4rem;
-    /* Slightly smaller than font-size to match visual cap-height */
+.logo-text {
+    font-family: var(--font-serif);
+    font-size: 1.5rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: var(--color-gold-dim);
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    gap: 12px;
+    /* Replaces gap-3 */
+}
+
+.logo-image {
+    height: 40px;
     width: auto;
     object-fit: contain;
+    border-radius: 0;
+    flex-shrink: 0;
+    /* Prevent image from being squashed by text */
+}
+
+@media (max-width: 768px) {
+    .logo {
+        font-size: 1rem;
+        /* Reduced font size significantly */
+        gap: 6px;
+    }
+
+    .logo-image {
+        height: 24px;
+        /* Smaller logo image */
+    }
+
+    .logo span {
+        display: block;
+        /* Ensure text is visible */
+    }
 }
 
 .desktop-menu {
