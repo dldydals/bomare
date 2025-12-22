@@ -83,6 +83,8 @@
 
 .text-sm {
   font-size: 0.875rem;
+  font-family: 'Inter', sans-serif;
+  color: #424446;
 }
 
 .text-lg {
@@ -502,7 +504,7 @@
 
 .modal-input {
   width: 100%;
-  background-color: #0f172a;
+  background-color: #37972e;
   border: 1px solid #334155;
   color: #f1f5f9;
   padding: 0.75rem 1rem;
@@ -515,7 +517,7 @@
 .modal-input:focus {
   border-color: var(--tarrot-secondary);
   box-shadow: 0 0 0 2px rgba(252, 211, 77, 0.2);
-  background-color: #1e293b;
+  background-color: #308048;
 }
 
 /* Fix date input icon color filter for dark bg */

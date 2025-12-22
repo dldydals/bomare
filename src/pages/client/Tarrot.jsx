@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import './Tarrot.css';
+import { Calendar, User, Phone, Clock, Sparkles } from 'lucide-react'; // 아이콘 추가로 직관성 향상
 
 export default function Tarrot() {
   const [reviews, setReviews] = useState([]);
@@ -328,52 +329,87 @@ export default function Tarrot() {
         {/* Reservation Modal */}
         <div id="reservation-modal" className="modal-overlay hidden" onClick={closeReservationModal}>
           <div id="modal-content" className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <h4 className="text-xl font-bold text-secondary mb-4">🗓️ 예약 하기</h4>
-            <p className="text-gray-500 mb-6 text-sm font-medium">상담 정보를 입력해주시면 빠르게 예약 도와드리겠습니다.</p>
-
+            <div className="bg-slate-50 p-6 text-center border-b border-gray-100">
+              <div className="inline-flex items-center justify-center w-12 h-12 bg-indigo-100 rounded-full mb-3 text-indigo-600">
+                <Calendar size={24} color="#a79f9fff" />
+              </div>
+              <h4 className="text-xl font-bold text-slate-800 flex justify-center items-center gap-2">
+                상담 예약하기 <Sparkles size={18} className="text-yellow-500" />
+              </h4>
+              <p className="text-sm text-slate-500 mt-1" style={{ color: "#5f5c5cff" }}>당신의 운명을 밝혀줄 소중한 시간을 예약하세요.</p>
+            </div>
             <div className="flex flex-col gap-3 mb-6">
               <div className="flex flex-row items-center gap-4 mb-6">
                 <div className="flex flex-row items-center gap-6 mb-6">
-                  {/* 이름 섹션: 레이블 폭을 넓히고 입력창을 최적화 */}
-                  <div className="flex items-center gap-2">
-                    <label className="w-24 shrink-0 text-xs text-gray-500 font-bold text-left">
-                      이름
-                    </label>
-                    <input
-                      type="text"
-                      className="w-16 bg-white text-gray-900 border border-gray-300 rounded p-2 focus:ring-2 focus:ring-yellow-400 outline-none transition-all"
-                      value={reservationForm.name}
-                      onChange={e => setReservationForm({ ...reservationForm, name: e.target.value })}
-                    />
-                  </div>
-
-                  {/* 연락처 섹션: 레이블 폭을 맞추고 입력창 길이를 전화번호에 최적화 */}
-                  <div className="flex items-center gap-2">
-                    <label className="w-24 shrink-0 text-xs text-gray-500 font-bold text-left">
-                      연락처
-                    </label>
-                    <input
-                      type="tel"
-                      placeholder="010-0000-0000"
-                      className="w-16 bg-white text-gray-900 border border-gray-300 rounded p-2 focus:ring-2 focus:ring-yellow-400 outline-none transition-all"
-                      value={reservationForm.phone}
-                      onChange={e => setReservationForm({ ...reservationForm, phone: e.target.value })}
-                    />
+                  {/* 이름 & 연락처 섹션: 2컬럼 그리드로 한 줄 배치 */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <label className="flex items-center gap-1.5 text-xs font-bold text-gray-900 ml-1">
+                        <User size={14} color="#3a3939ff" /> 이름
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="성함"
+                        className="w-full bg-slate-50 border-0 ring-1 ring-slate-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-indigo-400 outline-none transition-all placeholder:text-slate-300"
+                        value={reservationForm.name}
+                        onChange={e => setReservationForm({ ...reservationForm, name: e.target.value })}
+                      />
+                    </div><br />
+                    <div className="space-y-1.5">
+                      <label className="flex items-center gap-1.5 text-xs font-bold text-gray-900 ml-1 ">
+                        <Phone size={14} color="#3a3939ff" /> 연락처
+                      </label>
+                      <input
+                        type="tel"
+                        placeholder="010-0000-0000"
+                        className="w-full bg-slate-50 border-0 ring-1 ring-slate-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-indigo-400 outline-none transition-all placeholder:text-slate-300"
+                        value={reservationForm.phone}
+                        onChange={e => setReservationForm({ ...reservationForm, phone: e.target.value })}
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
               <div className="flex gap-2 mt-2">
                 <div className="w-1/2 flex flex-col">
                   <label className="text-left text-xs text-gray-500 font-semibold ml-1 mb-1">날짜</label>
+
                   <input
+                    type="date"
+                    className="
+                          w-full 
+                          bg-white               /* 1. 배경을 순백색으로 변경하여 대비 강화 */
+                          text-gray-900         /* 2. 입력된 글자색을 아주 진한 회색으로 고정 */
+                          border-2               /* 3. 테두리 두께를 살짝 높임 */
+                          border-slate-200       /* 4. 연한 회색 테두리 적용 */
+                          rounded-xl 
+                          p-3 
+                          text-sm 
+                          font-medium            /* 5. 글자 두께를 약간 주어 가독성 향상 */
+                          focus:border-indigo-500 /* 6. 클릭 시 테두리 색상 강조 */
+                          focus:ring-2 
+                          focus:ring-indigo-100  /* 7. 클릭 시 은은한 외곽광 효과 */
+                          outline-none 
+                          transition-all
+                          /* appearance-none 제거: 브라우저 기본 캘린더 아이콘이 보이도록 함 */
+                        "
+                    value={reservationForm.date}
+                    onChange={e => setReservationForm({ ...reservationForm, date: e.target.value })}
+                    required
+                  />
+
+                  {/* <input
                     type="date"
                     className="w-full bg-white text-gray-900 border border-gray-300 rounded p-2 focus:ring-2 focus:ring-yellow-400 outline-none"
                     value={reservationForm.date}
                     onChange={e => setReservationForm({ ...reservationForm, date: e.target.value })}
-                  />
+                  /> */}
                 </div>
+
                 <div className="w-1/2 modal-input-group">
-                  <label className="modal-label">시간</label>
+                  <label className="text-xs font-bold text-gray-900 ml-1 flex items-center gap-1.5">
+                    <Clock size={14} /> 시간
+                  </label>
                   <select
                     className="modal-input"
                     value={reservationForm.time}
@@ -391,7 +427,8 @@ export default function Tarrot() {
 
               <label className="text-left text-xs text-gray-500 font-semibold ml-1 mt-2">상담 유형</label>
               <select
-                className="w-full bg-white text-gray-900 border border-gray-300 rounded p-2 focus:ring-2 focus:ring-yellow-400 outline-none"
+                // className="w-full bg-white text-gray-900 border border-gray-300 rounded p-2 focus:ring-2 focus:ring-yellow-400 outline-none"
+                className="modal-input"
                 value={reservationForm.type}
                 onChange={e => setReservationForm({ ...reservationForm, type: e.target.value })}
               >
