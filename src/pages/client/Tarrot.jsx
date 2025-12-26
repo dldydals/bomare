@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import './Tarrot.css';
 import { Calendar, User, Phone, Clock, Sparkles } from 'lucide-react'; // 아이콘 추가로 직관성 향상
+import Select from 'react-select';
 
 export default function Tarrot() {
   const [reviews, setReviews] = useState([]);
@@ -9,7 +10,7 @@ export default function Tarrot() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Reservation Form State
-  const [reservationForm, setReservationForm] = useState({ name: '', phone: '', date: '', time: '', type: 'phone' });
+  const [reservationForm, setReservationForm] = useState({ name: '', phone: '', date: '', time: '', type: 'phone', deck: 'universal', requestContent: '' });
   const [reservedTimes, setReservedTimes] = useState([]);
   const [faqs, setFaqs] = useState([]);
   const [faqQuery, setFaqQuery] = useState('');
@@ -104,7 +105,7 @@ export default function Tarrot() {
       });
       if (res.ok) {
         alert('예약이 완료되었습니다! (확정 시 알림톡 발송)');
-        setReservationForm({ name: '', phone: '', date: '', time: '', type: 'phone' });
+        setReservationForm({ name: '', phone: '', date: '', time: '', type: 'phone', deck: 'universal', requestContent: '' });
         closeReservationModal({ target: { id: 'close-modal-btn' } });
       } else {
         alert('예약 실패. 다시 시도해주세요.');
@@ -114,6 +115,69 @@ export default function Tarrot() {
       alert('오류가 발생했습니다.');
     }
   };
+  // React Select Custom Styles
+  const customSelectStyles = {
+    control: (provided, state) => ({
+      ...provided,
+      backgroundColor: 'white',
+      borderColor: state.isFocused ? '#6366f1' : '#e2e8f0', // indigo-500 : slate-200
+      borderWidth: '2px',
+      borderRadius: '0.75rem', // rounded-xl
+      padding: '0.2rem',
+      boxShadow: state.isFocused ? '0 0 0 2px #e0e7ff' : 'none', // ring-indigo-100
+      '&:hover': {
+        borderColor: '#cbd5e1' // slate-300
+      },
+      fontSize: '0.875rem' // text-sm
+    }),
+    option: (provided, state) => ({
+      ...provided,
+      backgroundColor: state.isSelected
+        ? '#f472b6' // tarrot-primary
+        : state.isFocused
+          ? '#fce7f3' // light pink hover
+          : 'white',
+      color: state.isSelected ? 'white' : '#1e293b', // slate-800
+      cursor: state.isDisabled ? 'not-allowed' : 'pointer',
+      opacity: state.isDisabled ? 0.5 : 1,
+      fontSize: '0.875rem'
+    }),
+    menu: (provided) => ({
+      ...provided,
+      borderRadius: '0.75rem',
+      overflow: 'hidden',
+      zIndex: 9999
+    }),
+    placeholder: (provided) => ({
+      ...provided,
+      color: '#cbd5e1' // slate-300
+    }),
+    singleValue: (provided) => ({
+      ...provided,
+      color: '#0f172a', // gray-900
+      fontWeight: 500
+    })
+  };
+
+  const timeOptions = ['10:00', '11:00', '14:00', '15:00', '19:00'].map(time => ({
+    value: time,
+    label: time + (reservedTimes.includes(time) ? ' (마감)' : ''),
+    isDisabled: reservedTimes.includes(time)
+  }));
+
+  const typeOptions = [
+    { value: 'phone', label: '🔮 심층 전화 타로' },
+    { value: 'visit', label: '🏠 프리미엄 방문 상담' },
+    { value: 'chat', label: '💬 빠른 채팅 타로' }
+  ];
+
+  const deckOptions = [
+    { value: 'universal', label: '🃏 유니버셜 웨이트 (기본)' },
+    { value: 'symbolon', label: '♋ 심볼론 (심리/관계)' },
+    { value: 'decameron', label: '❤️ 데카메론 (속궁합/19금)' },
+    { value: 'osho', label: '🧘 오쇼젠 (명상/현재)' },
+    { value: 'time', label: '⏳ 시간의 바퀴 (1년 운세)' }
+  ];
 
   const filteredServices = services.filter(s => serviceFilter === 'all' || s.id === serviceFilter);
   const filteredFaqs = faqs.filter(f => f.question.toLowerCase().includes(faqQuery) || f.answer.toLowerCase().includes(faqQuery));
@@ -149,10 +213,10 @@ export default function Tarrot() {
           {/* Hero Section */}
           <section id="home" className="text-center py-12 section-fade-in" style={{ animationDelay: '0s' }}>
             <div className="hero-photo-frame">
-              <img src="/assets/img_bg.png" alt="타로 전문가 타로스타" className="w-full h-full object-cover" onError={(e) => e.target.src = 'https://placehold.co/128x128/581c87/fcd34d?text=타로스타'} />
+              <img src="/assets/img_bg.png" alt="타로 전문가 타로스타" className="w-full h-full object-cover" onError={(e) => e.target.src = 'https://placehold.co/128x128/f472b6/fcd34d?text=타로스타'} />
             </div>
-            <h2 className="text-3xl font-bold mb-2 text-white">타로 전문가 타로스타</h2>
-            <p className="text-lg mb-6 text-gray-400">
+            <h2 className="text-3xl font-bold mb-2 text-primary">타로 전문가 타로스타</h2>
+            <p className="text-lg mb-6 text-gray-500">
               당신의 길을 밝히는, <span className="text-secondary font-semibold">운명 해석의 마스터</span>
             </p>
 
@@ -176,12 +240,12 @@ export default function Tarrot() {
             <div className="flex flex-col gap-4">
               <div className="info-card">
                 <p className="font-semibold text-secondary mb-2">철학: 타로는 '선택'의 조력자</p>
-                <p className="text-sm text-gray-300">저는 타로를 단순한 점술이 아닌, 내면의 목소리를 듣고 최선의 선택을 할 수 있도록 돕는 심리 상담 도구로 사용합니다. 당신의 미래는 이미 결정된 것이 아니라, 지금 이 순간의 선택으로 만들어집니다.</p>
+                <p className="text-sm text-gray-600">저는 타로를 단순한 점술이 아닌, 내면의 목소리를 듣고 최선의 선택을 할 수 있도록 돕는 심리 상담 도구로 사용합니다. 당신의 미래는 이미 결정된 것이 아니라, 지금 이 순간의 선택으로 만들어집니다.</p>
               </div>
 
               <div className="info-card">
                 <p className="font-semibold text-secondary mb-2">주요 경력</p>
-                <ul className="text-sm text-gray-300 list-disc">
+                <ul className="text-sm text-gray-600 list-disc">
                   <li>국제 타로 마스터 협회 공인 자격증 취득 (2015)</li>
                   <li>온/오프라인 누적 상담 10,000회 이상</li>
                   <li>[미디어 출연] SBS '미래를 읽다' 게스트 출연 (2023)</li>
@@ -190,9 +254,9 @@ export default function Tarrot() {
               </div>
             </div>
 
-            <div className="mt-8 p-4 bg-opacity-50 bg-purple-900 rounded-lg text-center" style={{ backgroundColor: 'rgba(88, 28, 135, 0.3)' }}>
-              <p className="font-medium text-white italic">"타로 카드가 보여주는 것은 당신 마음속의 진실입니다."</p>
-              <a href="#" className="text-sm text-secondary hover:text-white mt-1 block">전문가 인터뷰 전문 보기 &gt;</a>
+            <div className="mt-8 p-4 bg-purple-100 rounded-lg text-center" style={{ backgroundColor: 'rgba(244, 114, 182, 0.1)' }}>
+              <p className="font-medium text-primary italic">"타로 카드가 보여주는 것은 당신 마음속의 진실입니다."</p>
+              <a href="#" className="text-sm text-secondary hover:text-primary mt-1 block">전문가 인터뷰 전문 보기 &gt;</a>
             </div>
           </section>
 
@@ -220,7 +284,11 @@ export default function Tarrot() {
                 <p className="text-lg font-bold">오쇼젠 (Osho Zen)</p>
                 <p className="text-xs text-gray-400 mt-1">명상/현실 자각</p>
               </div>
-              <div className="deck-tag" style={{ gridColumn: 'span 2', backgroundColor: 'rgba(88, 28, 135, 0.5)', border: 'none', color: 'white' }}>
+              <div className="deck-tag">
+                <p className="text-lg font-bold">시간의 바퀴</p>
+                <p className="text-xs text-gray-400 mt-1">연간 운세/흐름</p>
+              </div>
+              <div className="deck-tag" style={{ gridColumn: 'span 2', backgroundColor: 'rgba(244, 114, 182, 0.5)', border: 'none', color: 'white' }}>
                 이 외에도 <span className="font-bold">마르세유, 키퍼, 레노먼드</span> 등 다양한 덱을 준비하고 있습니다.
               </div>
             </div>
@@ -241,18 +309,18 @@ export default function Tarrot() {
               {filteredServices.map(service => (
                 <div key={service.id} className="service-card">
                   <h4 className="text-xl font-bold text-secondary mb-1">{service.title}</h4>
-                  <p className="text-sm text-gray-400 mb-3">{service.desc}</p>
+                  <p className="text-sm text-gray-500 mb-3">{service.desc}</p>
                   <div className="flex justify-between items-center text-sm font-medium">
                     <span>🕒 소요 시간: {service.time}</span>
-                    <span className="text-lg font-bold text-white">{service.price}</span>
+                    <span className="text-lg font-bold text-gray-900">{service.price}</span>
                   </div>
-                  <p className="text-xs mt-2" style={{ color: '#4ade80' }}>{service.note}</p>
+                  <p className="text-xs mt-2" style={{ color: '#16a34a' }}>{service.note}</p>
                 </div>
               ))}
             </div>
 
             <div className="mt-8 text-center pt-8 divider">
-              <p className="text-lg font-semibold text-white mb-4">원하는 상담 방식과 시간을 선택하세요.</p>
+              <p className="text-lg font-semibold text-gray-800 mb-4">원하는 상담 방식과 시간을 선택하세요.</p>
               <button onClick={showReservationModal} className="cta-button">
                 🗓️ 예약 시간표 확인 및 결제 연동
               </button>
@@ -269,9 +337,9 @@ export default function Tarrot() {
                 <div key={review.id} className="review-card">
                   <div className="flex items-center mb-2">
                     <span className="star-filled">{'★'.repeat(review.rating)}</span>
-                    <span className="ml-3 text-sm font-semibold text-gray-300">{review.name}</span>
+                    <span className="ml-3 text-sm font-semibold text-gray-600">{review.name}</span>
                   </div>
-                  <p className="text-sm text-gray-300 italic mb-2">{review.comment}</p>
+                  <p className="text-sm text-gray-600 italic mb-2">{review.comment}</p>
                   <p className="text-xs text-gray-500 text-right">상담 상품: {review.product || '상담'} | {review.date || new Date(review.created_at).toLocaleDateString()}</p>
                 </div>
               ))}
@@ -288,9 +356,9 @@ export default function Tarrot() {
             <h3 className="section-title">❓ 공지 및 FAQ</h3>
 
             <div className="notice-box">
-              <p className="text-lg font-semibold text-white mb-2">📌 [필독] 12월 운영 시간 안내</p>
-              <p className="text-sm text-gray-300">운영 시간: 평일 10:00 - 22:00 / 주말 11:00 - 18:00 (화요일 정기 휴무)</p>
-              <p className="text-sm mt-1" style={{ color: '#fca5a5' }}>임시 휴무일: 12월 24일, 25일 전체 예약 마감.</p>
+              <p className="text-lg font-semibold text-gray-900 mb-2">📌 [필독] 12월 운영 시간 안내</p>
+              <p className="text-sm text-gray-600">운영 시간: 평일 10:00 - 22:00 / 주말 11:00 - 18:00 (화요일 정기 휴무)</p>
+              <p className="text-sm mt-1" style={{ color: '#ef4444' }}>임시 휴무일: 12월 24일, 25일 전체 예약 마감.</p>
             </div>
 
             <input
@@ -304,8 +372,8 @@ export default function Tarrot() {
             <div className="flex flex-col gap-3">
               {filteredFaqs.map((faq, i) => (
                 <details key={i} className="faq-details">
-                  <summary className="font-semibold text-gray-300">{faq.question}</summary>
-                  <p className="mt-2 text-sm text-gray-400">{faq.answer}</p>
+                  <summary className="font-semibold text-gray-800">{faq.question}</summary>
+                  <p className="mt-2 text-sm text-gray-500">{faq.answer}</p>
                 </details>
               ))}
             </div>
@@ -328,7 +396,12 @@ export default function Tarrot() {
 
         {/* Reservation Modal */}
         <div id="reservation-modal" className="modal-overlay hidden" onClick={closeReservationModal}>
-          <div id="modal-content" className="modal-content" onClick={(e) => e.stopPropagation()}>
+          <div id="modal-content" className="modal-content"
+            style={{
+              // -- maxWidth: '80%',
+              margin: '5% auto',
+              padding: '0 2%'  // 좌우 내부 여백 추가
+            }} onClick={(e) => e.stopPropagation()}>
             <div className="bg-slate-50 p-6 text-center border-b border-gray-100">
               <div className="inline-flex items-center justify-center w-12 h-12 bg-indigo-100 rounded-full mb-3 text-indigo-600">
                 <Calendar size={24} color="#a79f9fff" />
@@ -338,9 +411,9 @@ export default function Tarrot() {
               </h4>
               <p className="text-sm text-slate-500 mt-1" style={{ color: "#5f5c5cff" }}>당신의 운명을 밝혀줄 소중한 시간을 예약하세요.</p>
             </div>
-            <div className="flex flex-col gap-3 mb-6">
-              <div className="flex flex-row items-center gap-4 mb-6">
-                <div className="flex flex-row items-center gap-6 mb-6">
+            <div className="flex flex-col gap-3 mb-4">
+              <div className="flex flex-row items-center gap-4 mb-2">
+                <div className="flex flex-row items-center gap-6 mb-2">
                   {/* 이름 & 연락처 섹션: 2컬럼 그리드로 한 줄 배치 */}
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-1.5">
@@ -350,11 +423,11 @@ export default function Tarrot() {
                       <input
                         type="text"
                         placeholder="성함"
-                        className="w-full bg-slate-50 border-0 ring-1 ring-slate-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-indigo-400 outline-none transition-all placeholder:text-slate-300"
+                        className="w-full mb-2 bg-slate-50 border-0 ring-1 ring-slate-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-indigo-400 outline-none transition-all placeholder:text-slate-300"
                         value={reservationForm.name}
                         onChange={e => setReservationForm({ ...reservationForm, name: e.target.value })}
                       />
-                    </div><br />
+                    </div>
                     <div className="space-y-1.5">
                       <label className="flex items-center gap-1.5 text-xs font-bold text-gray-900 ml-1 ">
                         <Phone size={14} color="#3a3939ff" /> 연락처
@@ -410,7 +483,7 @@ export default function Tarrot() {
                   <label className="text-xs font-bold text-gray-900 ml-1 flex items-center gap-1.5">
                     <Clock size={14} /> 시간
                   </label>
-                  <select
+                  {/* <select
                     className="modal-input"
                     value={reservationForm.time}
                     onChange={e => setReservationForm({ ...reservationForm, time: e.target.value })}
@@ -421,21 +494,44 @@ export default function Tarrot() {
                         {time} {reservedTimes.includes(time) ? '(마감)' : ''}
                       </option>
                     ))}
-                  </select>
+                  </select> */}
+                  <Select
+                    options={timeOptions}
+                    value={timeOptions.find(opt => opt.value === reservationForm.time)}
+                    onChange={(option) => setReservationForm({ ...reservationForm, time: option.value })}
+                    styles={customSelectStyles}
+                    isSearchable={false}
+                  />
                 </div>
               </div>
 
               <label className="text-left text-xs text-gray-500 font-semibold ml-1 mt-2">상담 유형</label>
-              <select
-                // className="w-full bg-white text-gray-900 border border-gray-300 rounded p-2 focus:ring-2 focus:ring-yellow-400 outline-none"
-                className="modal-input"
-                value={reservationForm.type}
-                onChange={e => setReservationForm({ ...reservationForm, type: e.target.value })}
-              >
-                <option value="phone">심층 전화 타로</option>
-                <option value="visit">프리미엄 방문 상담</option>
-                <option value="chat">빠른 채팅 타로</option>
-              </select>
+
+              <Select
+                options={typeOptions}
+                value={typeOptions.find(opt => opt.value === reservationForm.type)}
+                onChange={(option) => setReservationForm({ ...reservationForm, type: option.value })}
+                styles={customSelectStyles}
+                isSearchable={false}
+              />
+
+              <label className="text-left text-xs text-gray-500 font-semibold ml-1 mt-2">선호 타로 덱</label>
+              <Select
+                options={deckOptions}
+                value={deckOptions.find(opt => opt.value === reservationForm.deck)}
+                onChange={(option) => setReservationForm({ ...reservationForm, deck: option.value })}
+                styles={customSelectStyles}
+                isSearchable={false}
+              />
+
+              <label className="text-left text-xs text-gray-500 font-semibold ml-1 mt-2">상담 요청 내용</label>
+              <textarea
+                className="w-full bg-slate-50 border-0 ring-1 ring-slate-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-indigo-400 outline-none transition-all placeholder:text-slate-300 resize-none"
+                rows="3"
+                placeholder="상담받고 싶은 내용을 간단히 적어주세요 (선택 사항)"
+                value={reservationForm.requestContent}
+                onChange={e => setReservationForm({ ...reservationForm, requestContent: e.target.value })}
+              />
             </div>
 
             <button
@@ -444,10 +540,16 @@ export default function Tarrot() {
             >
               예약 완료 및 결제(가상)
             </button>
+            <br />
             <button
               id="close-modal-btn"
               onClick={closeReservationModal}
-              className="mt-3 w-full px-4 py-2 font-medium rounded-lg bg-gray-700 text-gray-300"
+              // className="mt-3 w-full px-4 py-2 font-medium rounded-lg bg-gray-700 text-gray-300"
+              className="mt-2 w-4/5 mb-4 cta-button font-bold text-sm py-3 w-full mt-3"
+              // className="mt-6 w-4/5 mx-auto block px-4 py-3 font-bold text-sm rounded-xl bg-gray-500 hover:bg-gray-600 text-white shadow-lg hover:shadow-xl transition-all duration-300"
+              style={{ backgroundColor: '#6b7280', color: 'white' }}
+              onMouseEnter={(e) => e.target.style.backgroundColor = '#4b5563'}
+              onMouseLeave={(e) => e.target.style.backgroundColor = '#6b7280'}
             >
               닫기
             </button>
@@ -455,7 +557,7 @@ export default function Tarrot() {
         </div> {/* Reservation Modal End */}
 
       </div>
-    </div>
+    </div >
   );
 }
 

@@ -115,6 +115,8 @@ const initDB = async () => {
 
         // Schema Migration for Reservations
         try { await connection.query("ALTER TABLE reservations ADD COLUMN type VARCHAR(50)"); } catch (e) { }
+        try { await connection.query("ALTER TABLE reservations ADD COLUMN deck VARCHAR(50)"); } catch (e) { }
+        try { await connection.query("ALTER TABLE reservations ADD COLUMN request_content TEXT"); } catch (e) { }
 
 
         // Settlements Table
@@ -208,6 +210,8 @@ const initDB = async () => {
         date DATE,
         time VARCHAR(20),
         type VARCHAR(50),
+        deck VARCHAR(50),
+        request_content TEXT,
         status VARCHAR(20) DEFAULT 'pending',
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
@@ -266,18 +270,105 @@ app.post('/api/admin/login', async (req, res) => {
     }
 });
 
+app.get('/api/stats', async (req, res) => {
+    try {
+        const [users] = await db.query('SELECT COUNT(*) as count FROM users');
+        const [vendors] = await db.query('SELECT COUNT(*) as count FROM vendors');
+        const [revenue] = await db.query("SELECT SUM(amount) as total FROM settlements WHERE status = 'paid'"); // Mock revenue logic
+
+        res.json({
+            userCount: users[0].count,
+            vendorCount: vendors[0].count,
+            revenue: revenue[0].total || 0
+        });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Customers
+app.get('/api/customers', async (req, res) => {
+    try {
+        const [rows] = await db.query('SELECT * FROM users ORDER BY created_at DESC');
+        res.json(rows);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.post('/api/customers', async (req, res) => {
+    const { name, email, phone } = req.body;
+    try {
+        await db.query('INSERT INTO users (name, email, phone) VALUES (?, ?, ?)', [name, email, phone]);
+        res.json({ message: 'Customer created' });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Vendors
+app.get('/api/vendors', async (req, res) => {
+    try {
+        const [rows] = await db.query('SELECT * FROM vendors ORDER BY created_at DESC');
+        res.json(rows);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Helper for file logging
+const logError = (error, context = '', payload = {}) => {
+    const timestamp = new Date().toISOString();
+    const logMessage = `[${timestamp}] ${context}\nPayload: ${JSON.stringify(payload)}\nError: ${error.message}\nStack: ${error.stack}\n-----------------------------------\n`;
+    try {
+        fs.appendFileSync('server_error.log', logMessage);
+    } catch (e) {
+        console.error('Failed to write to log file:', e);
+    }
+};
+
+app.put('/api/vendors/:id', async (req, res) => {
+    const { id } = req.params;
+    const { name, category, contact, location, status, image, gallery_images, is_featured } = req.body;
+
+    console.log('Update Vendor Request:', { id, body: req.body });
+
+    try {
+        await db.query(
+            'UPDATE vendors SET name = ?, category = ?, contact = ?, location = ?, status = ?, image = ?, gallery_images = ?, is_featured = ? WHERE id = ?',
+            [
+                name || '',
+                category || '',
+                contact || '',
+                location || '',
+                status || 'partner',
+                image || null,
+                gallery_images || '[]',
+                is_featured ? 1 : 0,
+                id
+            ]
+        );
+        res.json({ message: 'Vendor updated' });
+    } catch (err) {
+        console.error('Update Vendor Error:', err);
+        logError(err, `Failed to update vendor ${id}`, req.body);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+
 // Reservations API
 app.get('/api/reservations', authenticateAdmin, async (req, res) => {
     try {
-        const [rows] = await db.query('SELECT * FROM reservations ORDER BY created_at DESC');
+        const [rows] = await db.query('SELECT id, name, phone, DATE_FORMAT(date, \'%Y-%m-%d\') date, time, type, status, created_at, deck, request_content FROM reservations ORDER BY created_at DESC');
         res.json(rows);
     } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 app.post('/api/reservations', async (req, res) => {
-    const { name, phone, date, time, type } = req.body;
+    const { name, phone, date, time, type, deck, requestContent } = req.body;
     try {
-        await db.query('INSERT INTO reservations (name, phone, date, time, type) VALUES (?, ?, ?, ?, ?)', [name, phone, date, time, type]);
+        await db.query('INSERT INTO reservations (name, phone, date, time, type, deck, request_content) VALUES (?, ?, ?, ?, ?, ?, ?)', [name, phone, date, time, type, deck || '', requestContent || '']);
         res.json({ message: 'Reservation created' });
     } catch (err) { res.status(500).json({ error: err.message }); }
 });

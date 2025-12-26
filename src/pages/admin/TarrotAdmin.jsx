@@ -131,27 +131,39 @@ export default function TarrotAdmin() {
                 <tr>
                   <th>이름</th>
                   <th>연락처</th>
-                  <th>날짜</th>
-                  <th>시간</th>
+                  <th>예약 일시</th>
                   <th>상담 유형</th>
+                  <th>타로 덱</th>
+                  <th>요청 내용</th>
                   <th>상태</th>
                   <th>작업</th>
                 </tr>
               </thead>
               <tbody>
                 {reservations.length === 0 && (
-                  <tr><td colSpan="7" className="text-center py-4 text-gray-500">예약 내역이 없습니다.</td></tr>
+                  <tr><td colSpan="9" className="text-center py-4 text-gray-500">예약 내역이 없습니다.</td></tr>
                 )}
                 {reservations.map(r => (
                   <tr key={r.id}>
                     <td className="font-bold">{r.name}</td>
                     <td>{r.phone}</td>
-                    <td>{r.date}</td>
-                    <td>{r.time}</td>
+                    <td>{r.date} {r.time}</td>
                     <td>
-                      <span className={`badge ${r.type}`}>
-                        {r.type === 'phone' ? '📞 심층 전화 타로' : r.type === 'visit' ? '🏢 프리미엄 방문 상담' : (r.type === 'chat' ? '💬 빠른 채팅 타로' : r.type)}
-                      </span>
+                      {/* <span className={`badge ${r.type}`}> */}
+                      {r.type === 'phone' ? '🔮 심층 전화 타로' : r.type === 'visit' ? '🏠 프리미엄 방문 상담' : (r.type === 'chat' ? '💬 빠른 채팅 타로' : r.type)}
+                      {/* </span> */}
+                    </td>
+                    <td>
+                      {/* <span className="badge deck"> */}
+                      {r.deck === 'universal' ? '유니버셜' :
+                        r.deck === 'symbolon' ? '심볼론' :
+                          r.deck === 'decameron' ? '데카메론' :
+                            r.deck === 'osho' ? '오쇼젠' :
+                              r.deck === 'time' ? '시간의 바퀴' : '-'}
+                      {/* </span> */}
+                    </td>
+                    <td className="text-sm text-gray-600 truncate max-w-xs" title={r.request_content}>
+                      {r.request_content || '-'}
                     </td>
                     <td>
                       <span className={`status-badge ${r.status}`}>

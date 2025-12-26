@@ -164,6 +164,11 @@
     color: #7e22ce;
 }
 
+.badge.universal {
+    background: #f3e8ff;
+    color: #7e22ce;
+}
+
 .badge.chat {
     background: #dcfce7;
     color: #16a34a;
