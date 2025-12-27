@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import Button from '../../components/ui/Button';
+import { supabase } from '../../supabaseClient';
 import './Home.css';
 
 const HERO_IMAGE = "https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=2070";
@@ -19,9 +20,11 @@ export default function Home() {
     const scrollRefs = useRef({});
 
     useEffect(() => {
-        fetch('/api/vendors')
-            .then(res => res.json())
-            .then(data => {
+        const fetchVendors = async () => {
+            try {
+                const { data, error } = await supabase.from('vendors').select('*');
+                if (error) throw error;
+
                 // Filter only featured vendors first
                 const featured = data.filter(vendor => vendor.is_featured);
 
@@ -35,8 +38,12 @@ export default function Home() {
                     });
                 });
                 setVendorsByCategory(grouped);
-            })
-            .catch(err => console.error('Failed to fetch vendors:', err));
+            } catch (err) {
+                console.error('Failed to fetch vendors:', err);
+            }
+        };
+
+        fetchVendors();
     }, []);
 
     const { scrollYProgress } = useScroll({

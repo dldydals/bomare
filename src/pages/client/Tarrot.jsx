@@ -3,6 +3,8 @@ import './Tarrot.css';
 import { Calendar, User, Phone, Clock, Sparkles } from 'lucide-react'; // 아이콘 추가로 직관성 향상
 import Select from 'react-select';
 
+import { supabase } from '../../supabaseClient';
+
 export default function Tarrot() {
   const [reviews, setReviews] = useState([]);
   const [form, setForm] = useState({ name: '', rating: 5, comment: '' });
@@ -27,21 +29,40 @@ export default function Tarrot() {
   // Fetch FAQs on mount
   useEffect(() => {
     document.title = '행운의 별';
-    fetch('/api/faqs')
-      .then(res => res.json())
-      .then(data => setFaqs(data))
-      .catch(err => console.error('Failed to fetch FAQs:', err));
+    fetchFAQs();
   }, []);
+
+  const fetchFAQs = async () => {
+    try {
+      const { data, error } = await supabase.from('faqs').select('*').order('id', { ascending: true });
+      if (error) throw error;
+      setFaqs(data);
+    } catch (err) {
+      console.error('Failed to fetch FAQs:', err);
+    }
+  };
 
   // Fetch reserved times when date changes
   useEffect(() => {
     if (reservationForm.date) {
-      fetch(`/api/reservations/availability?date=${reservationForm.date}`)
-        .then(res => res.json())
-        .then(times => setReservedTimes(times))
-        .catch(err => console.error('Failed to fetch availability:', err));
+      fetchAvailability(reservationForm.date);
     }
   }, [reservationForm.date]);
+
+  const fetchAvailability = async (date) => {
+    try {
+      const { data, error } = await supabase
+        .from('reservations')
+        .select('time')
+        .eq('date', date)
+        .neq('status', 'cancelled');
+
+      if (error) throw error;
+      setReservedTimes(data.map(r => r.time));
+    } catch (err) {
+      console.error('Failed to fetch availability:', err);
+    }
+  };
 
   // Dummy reviews for initial display if fetch fails or is empty
   const initialReviews = [
@@ -98,21 +119,29 @@ export default function Tarrot() {
     }
 
     try {
-      const res = await fetch('/api/reservations', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(reservationForm)
-      });
-      if (res.ok) {
+      const { error } = await supabase.from('reservations').insert([
+        {
+          name: reservationForm.name,
+          phone: reservationForm.phone,
+          date: reservationForm.date,
+          time: reservationForm.time,
+          type: reservationForm.type,
+          deck: reservationForm.deck,
+          request_content: reservationForm.requestContent,
+          status: 'pending'
+        }
+      ]);
+
+      if (!error) {
         alert('예약이 완료되었습니다! (확정 시 알림톡 발송)');
         setReservationForm({ name: '', phone: '', date: '', time: '', type: 'phone', deck: 'universal', requestContent: '' });
         closeReservationModal({ target: { id: 'close-modal-btn' } });
       } else {
-        alert('예약 실패. 다시 시도해주세요.');
+        throw error;
       }
     } catch (err) {
       console.error(err);
-      alert('오류가 발생했습니다.');
+      alert('오류가 발생했습니다: ' + err.message);
     }
   };
   // React Select Custom Styles

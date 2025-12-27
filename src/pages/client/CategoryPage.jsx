@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import Button from '../../components/ui/Button';
+import { supabase } from '../../supabaseClient';
 import './CategoryPage.css';
 
 const CATEGORY_INFO = {
@@ -20,28 +21,28 @@ export default function CategoryPage() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        setLoading(true);
-        fetch('/api/vendors')
-            .then(res => res.json())
-            .then(data => {
+        const fetchVendors = async () => {
+            setLoading(true);
+            try {
+                const { data, error } = await supabase.from('vendors').select('*');
+                if (error) throw error;
+
                 // Filter vendors by category
                 const filtered = data.filter(vendor => {
                     if (!vendor.category) return false;
                     const c = vendor.category.toLowerCase().trim();
                     const searchTerms = info.dbParams.map(term => term.toLowerCase());
-                    // Check if category matches any of the search terms
-                    // For flexible matching, we check if vendor category INCLUDES search term or strict match?
-                    // Let's stick to strict or flexible? The Home used strict-ish match. 
-                    // Let's use exact match against known variants.
                     return searchTerms.includes(c);
                 });
                 setVendors(filtered);
-                setLoading(false);
-            })
-            .catch(err => {
+            } catch (err) {
                 console.error('Failed to fetch vendors:', err);
+            } finally {
                 setLoading(false);
-            });
+            }
+        };
+
+        fetchVendors();
     }, [id, info.dbParams]); // Add info.dbParams to dependencies carefully or ignore if constant
 
     return (

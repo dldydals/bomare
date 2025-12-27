@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Plus, Edit2, X, Save, Upload, Trash2, Image as ImageIcon } from 'lucide-react';
+import { supabase } from '../../supabaseClient';
 import './AdminTable.css';
 import './VendorList.css';
 
@@ -92,19 +93,21 @@ export default function VendorList() {
         fetchVendors();
     }, []);
 
-    const fetchVendors = () => {
-        fetch('/api/vendors')
-            .then(res => res.json())
-            .then(data => {
-                // Parse gallery_images from JSON string if needed
-                const parsedData = data.map(v => ({
-                    ...v,
-                    gallery_images: v.gallery_images ? JSON.parse(v.gallery_images) : []
-                }));
-                setVendors(parsedData);
-                setLoading(false);
-            })
-            .catch(err => console.error(err));
+    const fetchVendors = async () => {
+        try {
+            const { data, error } = await supabase.from('vendors').select('*');
+            if (error) throw error;
+
+            // Parse gallery_images from JSON string if needed (Supabase might return JSON object/array directly if column type is JSON, but SQL schema defined as TEXT, so parse is safer)
+            const parsedData = data.map(v => ({
+                ...v,
+                gallery_images: v.gallery_images && typeof v.gallery_images === 'string' ? JSON.parse(v.gallery_images) : (v.gallery_images || [])
+            }));
+            setVendors(parsedData);
+            setLoading(false);
+        } catch (err) {
+            console.error(err);
+        }
     };
 
     const handleEditClick = (vendor) => {
@@ -121,19 +124,23 @@ export default function VendorList() {
                 gallery_images: JSON.stringify(editingVendor.gallery_images)
             };
 
-            const res = await fetch(`/api/vendors/${editingVendor.id}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload),
-            });
-            if (res.ok) {
+            // Remove properties that shouldn't be updated or cause issues if they don't match exactly (like created_at)
+            const { id, created_at, ...updateData } = payload;
+
+            const { error } = await supabase
+                .from('vendors')
+                .update(updateData)
+                .eq('id', editingVendor.id);
+
+            if (!error) {
                 setEditingVendor(null);
                 fetchVendors();
             } else {
-                alert('Failed to update vendor');
+                throw error;
             }
         } catch (err) {
             console.error(err);
+            alert('Failed to update vendor: ' + err.message);
         }
     };
 
@@ -146,29 +153,42 @@ export default function VendorList() {
     };
 
     // File Upload Handler
+    // File Upload Handler (Supabase)
     const handleUpload = async (files, field) => {
-        const formData = new FormData();
-        files.forEach(file => formData.append('files', file));
-
         try {
-            const res = await fetch('/api/upload', {
-                method: 'POST',
-                body: formData
-            });
-            const data = await res.json();
+            const uploadedUrls = [];
 
-            if (data.paths) {
-                setEditingVendor(prev => {
-                    if (field === 'image') {
-                        return { ...prev, image: data.paths[0] }; // Replace main image
-                    } else {
-                        return { ...prev, gallery_images: [...prev.gallery_images, ...data.paths] }; // Append to gallery
-                    }
-                });
+            for (const file of files) {
+                // Generate unique filename
+                const fileExt = file.name.split('.').pop();
+                const fileName = `${Date.now()}_${Math.random().toString(36).substr(2, 9)}.${fileExt}`;
+
+                // Upload to Supabase 'images' bucket
+                const { error } = await supabase.storage
+                    .from('images')
+                    .upload(fileName, file);
+
+                if (error) throw error;
+
+                // Get Public URL
+                const { data: { publicUrl } } = supabase.storage
+                    .from('images')
+                    .getPublicUrl(fileName);
+
+                uploadedUrls.push(publicUrl);
             }
+
+            setEditingVendor(prev => {
+                if (field === 'image') {
+                    return { ...prev, image: uploadedUrls[0] }; // Replace main image
+                } else {
+                    return { ...prev, gallery_images: [...prev.gallery_images, ...uploadedUrls] }; // Append to gallery
+                }
+            });
+
         } catch (err) {
-            console.error('Upload failed:', err);
-            alert('Upload failed');
+            console.error('Supabase Upload Error:', err);
+            alert('Upload failed: ' + err.message);
         }
     };
 

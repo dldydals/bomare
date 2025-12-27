@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { supabase } from '../../supabaseClient';
 import './TarrotAdmin.css';
 
 export default function TarrotAdmin() {
@@ -34,23 +35,32 @@ export default function TarrotAdmin() {
   }, [token, isRarrot]);
 
   const fetchCustomers = async () => {
-    const res = await fetch('/api/customers', { headers: { Authorization: `Bearer ${token}` } });
-    if (res.status === 401) return handleLogout();
-    setCustomers(await res.json());
+    try {
+      const { data, error } = await supabase.from('users').select('*').eq('role', 'user').order('created_at', { ascending: false });
+      if (error) throw error;
+      setCustomers(data);
+    } catch (err) { console.error(err); }
   };
   const fetchReviews = async () => {
-    const res = await fetch('/api/reviews', { headers: { Authorization: `Bearer ${token}` } });
-    if (res.status === 401) return handleLogout();
-    setReviews(await res.json());
+    try {
+      const { data, error } = await supabase.from('reviews').select('*').order('created_at', { ascending: false });
+      if (error) throw error;
+      setReviews(data);
+    } catch (err) { console.error(err); }
   };
   const fetchReservations = async () => {
-    const res = await fetch('/api/reservations', { headers: { Authorization: `Bearer ${token}` } });
-    if (res.status === 401) return handleLogout();
-    setReservations(await res.json());
+    try {
+      const { data, error } = await supabase.from('reservations').select('*').order('created_at', { ascending: false });
+      if (error) throw error;
+      setReservations(data);
+    } catch (err) { console.error(err); }
   };
   const fetchFaqs = async () => {
-    const res = await fetch('/api/faqs');
-    setFaqs(await res.json());
+    try {
+      const { data, error } = await supabase.from('faqs').select('*').order('id', { ascending: true });
+      if (error) throw error;
+      setFaqs(data);
+    } catch (err) { console.error(err); }
   };
 
   const handleLogout = () => {
@@ -60,40 +70,45 @@ export default function TarrotAdmin() {
 
   const createCustomer = async (e) => {
     e.preventDefault();
-    const res = await fetch('/api/customers', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, body: JSON.stringify(customerForm) });
-    if (res.status === 401) return handleLogout();
-    setCustomerForm({ name: '', email: '', phone: '' });
-    fetchCustomers();
+    try {
+      const { error } = await supabase.from('users').insert([{ ...customerForm, role: 'user' }]);
+      if (error) throw error;
+      setCustomerForm({ name: '', email: '', phone: '' });
+      fetchCustomers();
+    } catch (err) { alert('Failed to create customer: ' + err.message); }
   };
 
   const deleteReview = async (id) => {
     if (!confirm('삭제하시겠습니까?')) return;
-    await fetch(`/api/reviews/${id}`, { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } });
-    fetchReviews();
+    try {
+      const { error } = await supabase.from('reviews').delete().eq('id', id);
+      if (error) throw error;
+      fetchReviews();
+    } catch (err) { alert('Failed: ' + err.message); }
   };
 
   const confirmReservation = async (id) => {
-    await fetch(`/api/reservations/${id}/status`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-      body: JSON.stringify({ status: 'confirmed' })
-    });
-    fetchReservations();
+    try {
+      const { error } = await supabase.from('reservations').update({ status: 'confirmed' }).eq('id', id);
+      if (error) throw error;
+      fetchReservations();
+    } catch (err) { alert('Failed: ' + err.message); }
   };
 
   const handleFaqSubmit = async (e) => {
     e.preventDefault();
-    const url = editingFaqId ? `/api/faqs/${editingFaqId}` : '/api/faqs';
-    const method = editingFaqId ? 'PUT' : 'POST';
-
-    await fetch(url, {
-      method,
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-      body: JSON.stringify(faqForm)
-    });
-    setFaqForm({ question: '', answer: '' });
-    setEditingFaqId(null);
-    fetchFaqs();
+    try {
+      if (editingFaqId) {
+        const { error } = await supabase.from('faqs').update(faqForm).eq('id', editingFaqId);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase.from('faqs').insert([faqForm]);
+        if (error) throw error;
+      }
+      setFaqForm({ question: '', answer: '' });
+      setEditingFaqId(null);
+      fetchFaqs();
+    } catch (err) { alert('Failed: ' + err.message); }
   };
 
   const editFaq = (faq) => {
@@ -103,8 +118,11 @@ export default function TarrotAdmin() {
 
   const deleteFaq = async (id) => {
     if (!confirm('FAQ를 삭제하시겠습니까?')) return;
-    await fetch(`/api/faqs/${id}`, { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } });
-    fetchFaqs();
+    try {
+      const { error } = await supabase.from('faqs').delete().eq('id', id);
+      if (error) throw error;
+      fetchFaqs();
+    } catch (err) { alert('Failed: ' + err.message); }
   };
 
   return (

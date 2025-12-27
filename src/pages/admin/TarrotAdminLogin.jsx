@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { supabase } from '../../supabaseClient';
 import './TarrotAdminLogin.css';
 
 export default function TarrotAdminLogin() {
@@ -20,10 +21,27 @@ export default function TarrotAdminLogin() {
     e.preventDefault();
     setError(null);
     try {
-      const res = await fetch('/api/admin/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password }) });
-      const data = await res.json();
-      if (!res.ok) return setError(data.error || 'Login failed');
-      localStorage.setItem('admin_token', data.token);
+      // Direct DB check for demo migration compatibility. 
+      // In Production, use supabase.auth.signInWithPassword() and remove the 'users' password column.
+      const { data, error } = await supabase
+        .from('users')
+        .select('*')
+        .eq('email', email)
+        .eq('role', 'admin')
+        .single();
+
+      if (error || !data) {
+        throw new Error('Invalid email or not an admin');
+      }
+
+      // Simple password check (In prod, use bcryptjs or Supabase Auth)
+      // Note: The schema seeded 'admin123' as password.
+      if (data.password !== password) {
+        throw new Error('Invalid password');
+      }
+
+      // Set a dummy token or user info for logic consistency
+      localStorage.setItem('admin_token', JSON.stringify({ id: data.id, email: data.email, role: data.role }));
       navigate(isRarrot ? '/rarrot/tarrot-admin' : '/tarrot-admin');
     } catch (e) { setError(e.message); }
   };
