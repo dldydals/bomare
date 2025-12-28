@@ -90,13 +90,16 @@ export default function VendorList() {
     const [editingVendor, setEditingVendor] = useState(null);
 
     useEffect(() => {
+        console.log('VendorList Component MOUNTED'); // Global mount log
         fetchVendors();
     }, []);
 
     const fetchVendors = async () => {
         try {
+            console.log('Fetching vendors...');
             const { data, error } = await supabase.from('vendors').select('*');
             if (error) throw error;
+            console.log('Vendors fetched:', data);
 
             // Parse gallery_images from JSON string if needed (Supabase might return JSON object/array directly if column type is JSON, but SQL schema defined as TEXT, so parse is safer)
             const parsedData = data.map(v => ({
@@ -111,6 +114,7 @@ export default function VendorList() {
     };
 
     const handleEditClick = (vendor) => {
+        console.log('Editing vendor (CLICKED):', vendor); // Debug log
         setEditingVendor({
             ...vendor,
             gallery_images: Array.isArray(vendor.gallery_images) ? vendor.gallery_images : []
@@ -205,7 +209,7 @@ export default function VendorList() {
     return (
         <div className="admin-page-container">
             <div className="page-header">
-                <h1 className="page-title">업체 관리</h1>
+                <h1 className="page-title">업체 관리 (DEBUG)</h1>
                 <div className="page-actions">
                     <button className="btn-primary"><Plus size={16} /> 업체 등록</button>
                 </div>
@@ -271,25 +275,25 @@ export default function VendorList() {
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="form-group">
                                     <label>업체명</label>
-                                    <input name="name" value={editingVendor.name} onChange={handleChange} />
+                                    <input name="name" value={editingVendor.name || ''} onChange={handleChange} />
                                 </div>
                                 <div className="form-group">
                                     <label>카테고리</label>
-                                    <input name="category" value={editingVendor.category} onChange={handleChange} />
+                                    <input name="category" value={editingVendor.category || ''} onChange={handleChange} />
                                 </div>
                                 <div className="form-group">
                                     <label>연락처</label>
-                                    <input name="contact" value={editingVendor.contact} onChange={handleChange} />
+                                    <input name="contact" value={editingVendor.contact || ''} onChange={handleChange} />
                                 </div>
                                 <div className="form-group">
                                     <label>위치</label>
-                                    <input name="location" value={editingVendor.location} onChange={handleChange} />
+                                    <input name="location" value={editingVendor.location || ''} onChange={handleChange} />
                                 </div>
                             </div>
 
                             <div className="form-group">
                                 <label>상태</label>
-                                <select name="status" value={editingVendor.status} onChange={handleChange}>
+                                <select name="status" value={editingVendor.status || 'partner'} onChange={handleChange}>
                                     <option value="partner">Partner</option>
                                     <option value="inactive">Inactive</option>
                                 </select>
