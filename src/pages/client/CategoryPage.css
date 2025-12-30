@@ -5,7 +5,7 @@
 .category-header {
     background-color: var(--color-navy);
     color: white;
-    padding: 80px 20px;
+    padding: 10px 20px;
     text-align: center;
     margin-bottom: 40px;
 }
@@ -21,6 +21,7 @@
     font-size: 1.1rem;
     opacity: 0.8;
     font-weight: 300;
+    margin-top: 0px;
 }
 
 .empty-state {

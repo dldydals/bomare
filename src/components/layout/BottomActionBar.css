@@ -20,6 +20,12 @@
     font-size: 0.8rem;
     gap: 4px;
     color: var(--color-navy);
+    /* Button reset styles */
+    border: none;
+    background: none;
+    padding: 0;
+    cursor: pointer;
+    text-decoration: none;
 }
 
 .action-btn.primary {

@@ -121,6 +121,19 @@ export default function VendorList() {
         });
     };
 
+    const handleAddClick = () => {
+        setEditingVendor({
+            name: '',
+            category: '',
+            contact: '',
+            location: '',
+            status: 'partner',
+            image: '',
+            gallery_images: [],
+            is_featured: false
+        });
+    };
+
     const handleSave = async () => {
         try {
             const payload = {
@@ -131,10 +144,21 @@ export default function VendorList() {
             // Remove properties that shouldn't be updated or cause issues if they don't match exactly (like created_at)
             const { id, created_at, ...updateData } = payload;
 
-            const { error } = await supabase
-                .from('vendors')
-                .update(updateData)
-                .eq('id', editingVendor.id);
+            let error;
+            if (editingVendor.id) {
+                // UPDATE existing vendor
+                const result = await supabase
+                    .from('vendors')
+                    .update(updateData)
+                    .eq('id', editingVendor.id);
+                error = result.error;
+            } else {
+                // INSERT new vendor
+                const result = await supabase
+                    .from('vendors')
+                    .insert([updateData]);
+                error = result.error;
+            }
 
             if (!error) {
                 setEditingVendor(null);
@@ -144,7 +168,7 @@ export default function VendorList() {
             }
         } catch (err) {
             console.error(err);
-            alert('Failed to update vendor: ' + err.message);
+            alert('Failed to save vendor: ' + err.message);
         }
     };
 
@@ -211,7 +235,7 @@ export default function VendorList() {
             <div className="page-header">
                 <h1 className="page-title">업체 관리 (DEBUG)</h1>
                 <div className="page-actions">
-                    <button className="btn-primary"><Plus size={16} /> 업체 등록</button>
+                    <button className="btn-primary" onClick={handleAddClick}><Plus size={16} /> 업체 등록</button>
                 </div>
             </div>
 
@@ -268,7 +292,7 @@ export default function VendorList() {
                 <div className="modal-overlay">
                     <div className="modal-content">
                         <div className="modal-header">
-                            <h2>업체 정보 수정</h2>
+                            <h2>{editingVendor.id ? '업체 정보 수정' : '업체 등록'}</h2>
                             <button className="close-btn" onClick={() => setEditingVendor(null)}><X size={20} /></button>
                         </div>
                         <div className="modal-body custom-scrollbar" style={{ maxHeight: '70vh', overflowY: 'auto' }}>

@@ -112,6 +112,7 @@ const initDB = async () => {
         try { await connection.query("ALTER TABLE vendors ADD COLUMN gallery_images TEXT"); } catch (e) { }
         try { await connection.query("ALTER TABLE vendors ADD COLUMN is_featured BOOLEAN DEFAULT FALSE"); } catch (e) { }
         try { await connection.query("ALTER TABLE vendors ADD COLUMN status VARCHAR(20) DEFAULT 'partner'"); } catch (e) { }
+        try { await connection.query("ALTER TABLE vendors ADD COLUMN description TEXT"); } catch (e) { }
 
         // Schema Migration for Reservations
         try { await connection.query("ALTER TABLE reservations ADD COLUMN type VARCHAR(50)"); } catch (e) { }
@@ -149,14 +150,14 @@ const initDB = async () => {
         if (rows[0].count === 0) {
             console.log('Seeding initial data...');
             await connection.query(`
-                INSERT INTO vendors (name, category, contact, location, image, is_featured) VALUES
-                ('House of Amy', 'Dress', '02-111-2222', 'Gangnam', 'https://images.unsplash.com/photo-1594552072238-b8a33785b261?auto=format&fit=crop&q=80', true),
-                ('Lamuse Studio', 'Studio', '02-333-4444', 'Cheongdam', '/assets/lamuse_studio.jpg', true),
-                ('Bittersweet', 'Makeup', '02-555-6666', 'Sinsa', '/assets/bittersweet.jpg', true),
-                ('Theography', 'Snap', '010-1234-5678', 'Seoul', '/assets/theography.jpg', true),
-                ('Rose Rosa', 'Dress', '02-777-8888', 'Gangnam', '/assets/roserosa.jpg', true),
-                ('Terrace Studio', 'Studio', '02-999-0000', 'Gangnam', 'https://images.unsplash.com/photo-1583939003579-730e3918a45a?q=80&w=1000', true),
-                ('Bonita Bailey', 'Dress', '02-121-3434', 'Cheongdam', '/assets/bonita_bailey.jpg', true)
+                INSERT INTO vendors (name, category, contact, location, image, is_featured, description) VALUES
+                ('House of Amy', 'Dress', '02-111-2222', 'Gangnam', 'https://images.unsplash.com/photo-1594552072238-b8a33785b261?auto=format&fit=crop&q=80', true, 'House of Amy는 감각적이고 세련된 드레스를 선보입니다.'),
+                ('Lamuse Studio', 'Studio', '02-333-4444', 'Cheongdam', '/assets/lamuse_studio.jpg', true, '자연스러운 빛과 감성을 담아내는 라뮤즈 스튜디오입니다.'),
+                ('Bittersweet', 'Makeup', '02-555-6666', 'Sinsa', '/assets/bittersweet.jpg', true, '신부님의 본연의 아름다움을 찾아드립니다.'),
+                ('Theography', 'Snap', '010-1234-5678', 'Seoul', '/assets/theography.jpg', true, '그날의 감동을 영화처럼 기록합니다.'),
+                ('Rose Rosa', 'Dress', '02-777-8888', 'Gangnam', '/assets/roserosa.jpg', true, '로맨틱하고 러블리한 감성의 로즈로사입니다.'),
+                ('Terrace Studio', 'Studio', '02-999-0000', 'Gangnam', 'https://images.unsplash.com/photo-1583939003579-730e3918a45a?q=80&w=1000', true, '도심 속 정원에서의 프라이빗한 웨딩 촬영.'),
+                ('Bonita Bailey', 'Dress', '02-121-3434', 'Cheongdam', '/assets/bonita_bailey.jpg', true, '클래식하면서도 모던한 보니타 베일리.')
             `);
 
             await connection.query(`
@@ -329,13 +330,13 @@ const logError = (error, context = '', payload = {}) => {
 
 app.put('/api/vendors/:id', async (req, res) => {
     const { id } = req.params;
-    const { name, category, contact, location, status, image, gallery_images, is_featured } = req.body;
+    const { name, category, contact, location, status, image, gallery_images, is_featured, description } = req.body;
 
     console.log('Update Vendor Request:', { id, body: req.body });
 
     try {
         await db.query(
-            'UPDATE vendors SET name = ?, category = ?, contact = ?, location = ?, status = ?, image = ?, gallery_images = ?, is_featured = ? WHERE id = ?',
+            'UPDATE vendors SET name = ?, category = ?, contact = ?, location = ?, status = ?, image = ?, gallery_images = ?, is_featured = ?, description = ? WHERE id = ?',
             [
                 name || '',
                 category || '',
@@ -345,6 +346,7 @@ app.put('/api/vendors/:id', async (req, res) => {
                 image || null,
                 gallery_images || '[]',
                 is_featured ? 1 : 0,
+                description || '',
                 id
             ]
         );

@@ -1,11 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import Button from '../../components/ui/Button';
 import { supabase } from '../../supabaseClient';
 import './Home.css';
 
-const HERO_IMAGE = "https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=2070";
+// const HERO_IMAGE = "https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=2070";
+const HERO_IMAGE = "https://images.unsplash.com/photo-1551468307-8c1e3c78013c?q=80&w=2070";
 
 const CATEGORIES = [
     { id: 'dress', name: 'Dress', title: '드레스' },
@@ -159,12 +161,14 @@ export default function Home() {
                                                 onError={(e) => e.target.src = 'https://via.placeholder.com/300x400?text=No+Image'}
                                             />
                                             <div className="vendor-overlay">
-                                                <Button
-                                                    variant="outline"
-                                                    style={{ color: 'white', borderColor: 'white' }}
-                                                >
-                                                    View Details
-                                                </Button>
+                                                <Link to={`/vendor/${vendor.id}`}>
+                                                    <Button
+                                                        variant="outline"
+                                                        style={{ color: 'white', borderColor: 'white' }}
+                                                    >
+                                                        View Details
+                                                    </Button>
+                                                </Link>
                                             </div>
                                         </div>
                                         <div className="vendor-info">

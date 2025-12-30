@@ -17,9 +17,12 @@ const navItems = [
     { name: '상담문의', path: '/contact' },
 ];
 
+import ConsultationModal from '../features/ConsultationModal';
+
 export default function Navbar() {
     const [scrolled, setScrolled] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const location = useLocation();
 
     useEffect(() => {
@@ -31,63 +34,82 @@ export default function Navbar() {
     }, []);
 
     return (
-        <nav className={`navbar ${scrolled ? 'scrolled' : ''}`}>
-            <div className="container navbar-content">
-                {/* <Link to="/" className="logo flex items-center"> */}
-                <a href="/"><img src={logo} alt="Bomare Logo" className="logo-image" /></a>
-                {/* </Link> */}
-                <span className="logo-text" >Bomare Wedding</span>
+        <>
+            <ConsultationModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+            />
 
-                {/* Desktop Menu */}
-                <div className="desktop-menu">
-                    {navItems.map((item) => (
-                        <NavLink
-                            key={item.name}
-                            to={item.path}
-                            className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
-                        >
-                            {item.name}
-                        </NavLink>
-                    ))}
-                    <Button variant="primary" className="ml-4" style={{ padding: '8px 16px', fontSize: '0.9rem' }}>
-                        Book Consultation
-                    </Button>
-                </div>
+            <nav className={`navbar ${scrolled ? 'scrolled' : ''}`}>
+                <div className="container navbar-content">
+                    {/* <Link to="/" className="logo flex items-center"> */}
+                    <a href="/"><img src={logo} alt="Bomare Logo" className="logo-image" /></a>
+                    {/* </Link> */}
+                    <span className="logo-text" >Bomare Wedding</span>
 
-                {/* Mobile Hamburger */}
-                <button className="mobile-toggle" onClick={() => setIsOpen(!isOpen)}>
-                    {isOpen ? <X /> : <Menu />}
-                </button>
-            </div>
-
-            {/* Mobile Menu Overlay */}
-            <AnimatePresence>
-                {isOpen && (
-                    <motion.div
-                        className="mobile-menu"
-                        initial={{ opacity: 0, y: -20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -20 }}
-                        transition={{ duration: 0.2 }}
-                    >
+                    {/* Desktop Menu */}
+                    <div className="desktop-menu">
                         {navItems.map((item) => (
                             <NavLink
                                 key={item.name}
                                 to={item.path}
-                                className="mobile-link"
-                                onClick={() => setIsOpen(false)}
+                                className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
                             >
                                 {item.name}
                             </NavLink>
                         ))}
-                        <div className="mobile-actions">
-                            <Button variant="primary" onClick={() => setIsOpen(false)} className="w-full">
-                                Book Consultation
-                            </Button>
-                        </div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
-        </nav>
+                        <Button
+                            variant="primary"
+                            className="ml-4"
+                            style={{ padding: '8px 16px', fontSize: '0.9rem' }}
+                            onClick={() => setIsModalOpen(true)}
+                        >
+                            상담 신청
+                        </Button>
+                    </div>
+
+                    {/* Mobile Hamburger */}
+                    <button className="mobile-toggle" onClick={() => setIsOpen(!isOpen)}>
+                        {isOpen ? <X /> : <Menu />}
+                    </button>
+                </div>
+
+                {/* Mobile Menu Overlay */}
+                <AnimatePresence>
+                    {isOpen && (
+                        <motion.div
+                            className="mobile-menu"
+                            initial={{ opacity: 0, y: -20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -20 }}
+                            transition={{ duration: 0.2 }}
+                        >
+                            {navItems.map((item) => (
+                                <NavLink
+                                    key={item.name}
+                                    to={item.path}
+                                    className="mobile-link"
+                                    onClick={() => setIsOpen(false)}
+                                >
+                                    {item.name}
+                                </NavLink>
+                            ))}
+                            <div className="mobile-actions">
+                                <Button
+                                    variant="primary"
+                                    onClick={() => {
+                                        setIsOpen(false);
+                                        setIsModalOpen(true);
+                                    }}
+                                    className="w-full"
+                                >
+                                    상담 신청
+                                </Button>
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+            </nav>
+        </>
     );
 }

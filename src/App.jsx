@@ -3,7 +3,7 @@ import ClientLayout from './components/layout/ClientLayout';
 import AdminLayout from './components/layout/AdminLayout';
 import Home from './pages/client/Home';
 import About from './pages/client/About';
-import Tarrot from './pages/client/Tarrot';
+// import Tarrot from './pages/client/Tarrot';
 import Portfolio from './pages/client/Portfolio';
 import Event from './pages/client/Event';
 import Contact from './pages/client/Contact';
@@ -11,9 +11,10 @@ import Dashboard from './pages/admin/Dashboard';
 import CustomerList from './pages/admin/CustomerList';
 import VendorList from './pages/admin/VendorList';
 import SettlementList from './pages/admin/SettlementList';
-import TarrotAdmin from './pages/admin/TarrotAdmin';
-import TarrotAdminLogin from './pages/admin/TarrotAdminLogin';
+// import TarrotAdmin from './pages/admin/TarrotAdmin';
+//import TarrotAdminLogin from './pages/admin/TarrotAdminLogin';
 import CategoryPage from './pages/client/CategoryPage';
+import VendorDetail from './pages/client/VendorDetail';
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
           <Route path="about" element={<About />} />
           <Route path="portfolio" element={<Portfolio />} />
           <Route path="category/:id" element={<CategoryPage />} />
+          <Route path="vendor/:id" element={<VendorDetail />} />
           <Route path="event" element={<Event />} />
           <Route path="contact" element={<Contact />} />
           {/* Tarrot is a standalone site — not inside Bomare client layout */}
@@ -41,14 +43,14 @@ function App() {
         </Route>
 
         {/* Tarrot standalone routes (no Bomare header/footer) */}
-        <Route path="/tarrot" element={<Tarrot />} />
-        <Route path="/tarrot-admin" element={<TarrotAdmin />} />
-        <Route path="/tarrot-admin/login" element={<TarrotAdminLogin />} />
+        {/* <Route path="/tarrot" element={<Tarrot />} /> */}
+        {/* <Route path="/tarrot-admin" element={<TarrotAdmin />} /> */}
+        {/* <Route path="/tarrot-admin/login" element={<TarrotAdminLogin />} /> */}
 
         {/* Rarrot (Tarrot alternative) standalone routes */}
-        <Route path="/rarrot" element={<Tarrot />} />
-        <Route path="/rarrot/tarrot-admin" element={<TarrotAdmin />} />
-        <Route path="/rarrot/tarrot-admin/login" element={<TarrotAdminLogin />} />
+        {/* <Route path="/rarrot" element={<Tarrot />} /> */}
+        {/* <Route path="/rarrot/tarrot-admin" element={<TarrotAdmin />} /> */}
+        {/* <Route path="/rarrot/tarrot-admin/login" element={<TarrotAdminLogin />} /> */}
 
       </Routes>
     </Router>

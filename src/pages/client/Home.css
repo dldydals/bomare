@@ -63,7 +63,7 @@
     font-size: 4rem;
     margin-bottom: 16px;
     text-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-    color: var(--color-gold);
+    color: #674835;
 }
 
 .hero-subtitle {
@@ -147,7 +147,7 @@
 
 /* Event */
 .event-bg {
-    background-color: var(--color-navy);
+    background-color: #7e7d92;
     color: white;
 }
 

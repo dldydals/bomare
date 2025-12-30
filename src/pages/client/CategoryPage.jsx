@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import Button from '../../components/ui/Button';
 import { supabase } from '../../supabaseClient';
@@ -78,7 +78,9 @@ export default function CategoryPage() {
                                         onError={(e) => e.target.src = 'https://via.placeholder.com/400x500?text=No+Image'}
                                     />
                                     <div className="card-overlay">
-                                        <Button variant="outline" style={{ color: 'white', borderColor: 'white' }}>View Details</Button>
+                                        <Link to={`/vendor/${vendor.id}`}>
+                                            <Button variant="outline" style={{ color: 'white', borderColor: 'white' }}>View Details</Button>
+                                        </Link>
                                     </div>
                                 </div>
                                 <div className="card-info">
